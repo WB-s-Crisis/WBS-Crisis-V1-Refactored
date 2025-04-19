@@ -9,7 +9,7 @@ import lime.system.System as LimeSystem;
 #if android
 import mobile.funkin.backend.utils.StorageUtil;
 #end
-#if mobile
+#if TOUCH_CONTROLS
 import mobile.funkin.backend.system.ButtonSubState;
 #end
 #if sys
@@ -81,9 +81,11 @@ class MobileOptions extends OptionsScreen {
 		#end
 	}
 	
+	#if TOUCH_CONTROLS
 	function enterAndEditButtons():Void {
 		new FlxTimer().start(0.5, (tmr) -> {
 			FlxG.state.openSubState(new ButtonSubState());
 		});
 	}
+	#end
 }
