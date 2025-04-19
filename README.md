@@ -80,7 +80,19 @@ In the future (when the engine won't be a WIP anymore) we're gonna also publish 
 </details>
 
 <details>
-  <summary><h2>Credits</h2></summary>
+  <summary><h2>This Mod Credits</h2></summary>
+
+  <details>
+    <summary>Source Programmer</summary>
+
+- Credits to [QQQEB](https://b23.tv/Xab96ta) Make This Mod.
+
+- Credits to [GeXie(VapireMox)](https://b23.tv/Rfynz48) Help.
+  </details>
+</details>
+
+<details>
+  <summary><h2>Engine Credits</h2></summary>
 
 - Credits to [Ne_Eo](https://twitter.com/Ne_Eo_Twitch) and the [3D-HaxeFlixel](https://github.com/lunarcleint/3D-HaxeFlixel) repository for Away3D Flixel support
 - Credits to the [FlxAnimate](https://github.com/Dot-Stuff/flxanimate) team for the Animate Atlas support
