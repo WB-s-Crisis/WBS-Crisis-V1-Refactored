@@ -240,7 +240,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		locatedFiles = Paths.assetsTree.list(null);
 
 		// removes unwanted assets
-		locatedFiles = loactedFiles.filter((file) -> {
+		locatedFiles = locatedFiles.filter((file) -> {
 			if(OpenFLAssets.exists(getFile(file))) {
 			    if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end;
 			    else return (file.startsWith("assets/") || file.startsWith("mods/"));
