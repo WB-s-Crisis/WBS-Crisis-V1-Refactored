@@ -66,9 +66,9 @@ class CopyState extends funkin.backend.MusicBeatState
 
 	override function create()
 	{
-		locatedFiles = [];
-		maxLoopTimes = 0;
-		checkExistingFiles();
+		//locatedFiles = [];
+		//maxLoopTimes = 0;
+		//checkExistingFiles();
 		if (maxLoopTimes <= 0)
 		{
 			FlxG.resetGame();
@@ -127,6 +127,9 @@ class CopyState extends funkin.backend.MusicBeatState
 				
 				FlxG.sound.play(Paths.sound('menu/confirm')).onComplete = () ->
 				{
+					directoriesToIgnore = [];
+					locatedFiles = [];
+					maxLoopTimes = 0;
 					FlxG.resetGame();
 				};
 		
@@ -237,15 +240,12 @@ class CopyState extends funkin.backend.MusicBeatState
 		locatedFiles = Paths.assetsTree.list(null);
 
 		// removes unwanted assets
-		var assets = locatedFiles.filter(folder -> folder.startsWith('assets/'));
-		var mods = locatedFiles.filter(folder -> folder.startsWith('mods/'));
-		locatedFiles = assets.concat(mods);
-		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(file));
-		#if android
-		for (file in locatedFiles)
-			if (file.startsWith('mods/'))
-				locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file));
-		#end
+		locatedFiles = loactedFiles.filter((file) -> {
+			if(OpenFLAssets.exists(getFile(file))) {
+			    if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end;
+			    else return (file.startsWith("assets/") || file.startsWith("mods/"));
+		        }else return false;
+		});
 
 		var filesToRemove:Array<String> = [];
 
@@ -268,7 +268,6 @@ class CopyState extends funkin.backend.MusicBeatState
 		}
 
 		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
-
 		maxLoopTimes = locatedFiles.length;
 
 		return (maxLoopTimes <= 0);
