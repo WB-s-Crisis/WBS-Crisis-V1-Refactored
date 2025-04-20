@@ -148,41 +148,38 @@ class CopyState extends funkin.backend.MusicBeatState
 
 	public function copyAsset(file:String)
 	{
-		if (!FileSystem.exists(file))
+		var directory = Path.directory(file);
+		if (!FileSystem.exists(directory))
+			FileSystem.createDirectory(directory);
+		try
 		{
-			var directory = Path.directory(file);
-			if (!FileSystem.exists(directory))
-				FileSystem.createDirectory(directory);
-			try
+			if (OpenFLAssets.exists(getFile(file)))
 			{
-				if (OpenFLAssets.exists(getFile(file)))
-				{
-					if (textFilesExtensions.contains(Path.extension(file)))
-						createContentFromInternal(file);
-					else
-					{
-						var path:String = '';
-						#if android
-						if (file.startsWith('mods/'))
-							path = StorageUtil.getExternalStorageDirectory() + file;
-						else
-						#end
-							path = file;
-					        if(FileSystem.exists(path)) FileSystem.deleteFile(path);
-						File.saveBytes(path, getFileBytes(getFile(file)));
-					}
-				}
+				if (textFilesExtensions.contains(Path.extension(file)))
+					createContentFromInternal(file);
 				else
 				{
-					failedFiles.push(getFile(file) + " (File Dosen't Exist)");
-					failedFilesStack.push('Asset ${getFile(file)} does not exist.');
+					var path:String = '';
+					#if android
+					if (file.startsWith('mods/'))
+						path = StorageUtil.getExternalStorageDirectory() + file;
+					else
+					#end
+						path = file;
+
+					File.saveBytes(path, getFileBytes(getFile(file)));
 				}
 			}
-			catch (e:haxe.Exception)
+			else
 			{
-				failedFiles.push('${getFile(file)} (${e.message})');
-				failedFilesStack.push('${getFile(file)} (${e.stack})');
+				failedFiles.push(getFile(file) + " (File Dosen't Exist)");
+				failedFilesStack.push('Asset ${getFile(file)} does not exist.');
 			}
+		}
+		catch (e:haxe.Exception)
+		{
+			failedFiles.push('${getFile(file)} (${e.message})');
+			failedFilesStack.push('${getFile(file)} (${e.stack})');
 		}
 	}
 
@@ -202,9 +199,7 @@ class CopyState extends funkin.backend.MusicBeatState
 			if (!FileSystem.exists(directory))
 				FileSystem.createDirectory(directory);
 
-			var path:String = Path.join([directory, fileName]);
-			if(FileSystem.exists(path)) FileSystem.deleteFile(path);
-			File.saveContent(path, fileData);
+			File.saveContent(Path.join([directory, fileName]), fileData);
 		}
 		catch (e:haxe.Exception)
 		{
