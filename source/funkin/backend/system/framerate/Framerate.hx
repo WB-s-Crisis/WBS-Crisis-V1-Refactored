@@ -81,12 +81,30 @@ class Framerate extends Sprite {
 		instance = this;
 	}
 
+	private static var visibleOneshot:Bool = true;
+
 	override function __enterFrame(deltaTime:Float) {
+		this.x = #if mobile 0.294117 * FlxG.game.x + #end offset.x;
+		this.y = offset.y;
+
+		if(!Options.fpsCounter) {
+			this.visible = false;
+
+			if(!visibleOneshot) {
+				visibleOneshot = true;
+				times.clear();
+			}
+
+			return;
+		}else {
+			if(visibleOneshot) {
+				visibleOneshot = false;
+				visible = true;
+			}
+		}
+		
 		currentTime += deltaTime;
 		times.push(currentTime);
-
-		this.x = #if mobile 75 + #end offset.x;
-		this.y = offset.y;
 
 		while (times[0] < currentTime - 1000)
 		{
