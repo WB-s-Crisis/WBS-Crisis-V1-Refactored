@@ -2,7 +2,6 @@ package funkin.backend.utils;
 
 #if ALLOW_MULTITHREADING
 import lime.system.ThreadPool;
-import lime.system.WorkOutput;
 class ThreadUtil {
 	/**
 	 * Creates a new Thread with an error handler.
@@ -31,7 +30,7 @@ class ThreadUtil {
 		}
 	}
 	
-	public static function launchThreadPool(mainFunc:State->WorkOutput->Void, ?onComplete:Dynamic->Void, ?onProgress:Dynamic->Void, ?onError:Dynamic->Void, autoStart:Bool = true) {
+	public static function launchThreadPool(mainFunc:Dynamic->Void, ?onComplete:Dynamic->Void, ?onProgress:Dynamic->Void, ?onError:Dynamic->Void, autoStart:Bool = true) {
 		var threadPool:ThreadPool = new ThreadPool(0, CoolUtil.getCPUThreadsCount());
 		
 		threadPool.doWork.add(mainFunc);
