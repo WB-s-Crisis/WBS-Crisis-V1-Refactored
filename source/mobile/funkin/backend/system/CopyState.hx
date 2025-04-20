@@ -157,10 +157,6 @@ class CopyState extends funkin.backend.MusicBeatState
 			{
 				if (OpenFLAssets.exists(getFile(file)))
 				{
-					if (textFilesExtensions.contains(Path.extension(file)))
-						createContentFromInternal(file);
-					else
-					{
 						var path:String = '';
 						#if android
 						if (file.startsWith('mods/'))
@@ -169,7 +165,6 @@ class CopyState extends funkin.backend.MusicBeatState
 						#end
 							path = file;
 						File.saveBytes(path, getFileBytes(getFile(file)));
-					}
 				}
 				else
 				{
@@ -269,6 +264,7 @@ class CopyState extends funkin.backend.MusicBeatState
 
 		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
 		maxLoopTimes = locatedFiles.length;
+		lime.app.Application.current.window.alert(locatedFiles);
 
 		return (maxLoopTimes <= 0);
 	}
