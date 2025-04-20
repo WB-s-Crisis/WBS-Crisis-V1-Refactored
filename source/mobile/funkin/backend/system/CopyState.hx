@@ -157,6 +157,10 @@ class CopyState extends funkin.backend.MusicBeatState
 			{
 				if (OpenFLAssets.exists(getFile(file)))
 				{
+					if (textFilesExtensions.contains(Path.extension(file)))
+						createContentFromInternal(file);
+					else
+					{
 						var path:String = '';
 						#if android
 						if (file.startsWith('mods/'))
@@ -164,7 +168,9 @@ class CopyState extends funkin.backend.MusicBeatState
 						else
 						#end
 							path = file;
+					        if(FileSystem.exists(path)) FileSystem.deleteFile(path);
 						File.saveBytes(path, getFileBytes(getFile(file)));
+					}
 				}
 				else
 				{
@@ -195,7 +201,10 @@ class CopyState extends funkin.backend.MusicBeatState
 				fileData = '';
 			if (!FileSystem.exists(directory))
 				FileSystem.createDirectory(directory);
-			File.saveContent(Path.join([directory, fileName]), fileData);
+
+			var path:String = Path.join([directory, fileName]);
+			if(FileSystem.exists(path)) FileSystem.deleteFile(path);
+			File.saveContent(path, fileData);
 		}
 		catch (e:haxe.Exception)
 		{
@@ -237,7 +246,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		// removes unwanted assets
 		locatedFiles = locatedFiles.filter((file) -> {
 			if(OpenFLAssets.exists(getFile(file))) {
-			    if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end;
+			    if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && (textFilesExtensions.contains(Path.extension(file)) ? (OpenFLAssets.getText(getFile(file)) != getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getContents(StorageUtil.getExternalStorageDirectory() + file) : File.getContents(file)) #else File.getContents(file) #end) : (getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end));
 			    else return (file.startsWith("assets/") || file.startsWith("mods/"));
 		        }else return false;
 		});
