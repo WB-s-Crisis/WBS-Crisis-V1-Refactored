@@ -1,6 +1,7 @@
 package funkin.backend.utils;
 
 import openfl.display.BitmapData;
+import openfl.geom.Matrix;
 import flixel.util.FlxColor;
 
 class BitmapUtil {
@@ -65,5 +66,30 @@ class BitmapUtil {
 			}
 		}
 		return mostPresentColor;
+	}
+	
+	public static function getGameScreenBitmapData(ms:Float = 0.075):BitmapData {
+		if(ms < 0.075) ms = 0.075;
+		var screenShot = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
+
+		function switchP() {
+			var matrix = new Matrix();
+			matrix.translate(-FlxG.game.x, -FlxG.game.y);
+			matrix.scale(1/FlxG.scaleMode.scale.x, 1/FlxG.scaleMode.scale.y);
+
+			screenShot.draw(BitmapData.fromImage(FlxG.stage.window.readPixels()), matrix);
+		}
+
+		if(!Options.fpsCounter) {
+			switchP();
+		}else {
+			Main.instance.framerateSprite.alpha = 0;
+			new FlxTimer().start(ms, (tmr) -> {
+				switchP();
+				Main.instance.framerateSprite.alpha = 1;
+			});
+		}
+
+		return screenShot;
 	}
 }

@@ -45,6 +45,10 @@ class GameplayOptions extends OptionsScreen {
 			"splashSkin"
 		));
 		add(new Checkbox(
+			"FPS Counter":
+			"If checked, FPS and some DEBUG information can be activated to watch.",
+			"fpsCounter"));
+		add(new Checkbox(
 			"Naughtyness",
 			"If unchecked, will censor the Week 7 cutscenes.",
 			"naughtyness"));

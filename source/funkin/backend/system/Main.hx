@@ -31,6 +31,9 @@ class Main extends Sprite
 	// make this empty once you guys are done with the project.
 	// good luck /gen <3 @crowplexus
 	public static final releaseCycle:String = "Beta";
+	
+	//做一份测试用的
+	public static var originCwd:String = "";
 
 	public static var instance:Main;
 
@@ -68,6 +71,7 @@ class Main extends Sprite
 		super();
 
 		instance = this;
+		originCwd = Sys.getCwd();
 
 		#if mobile
 		#if android

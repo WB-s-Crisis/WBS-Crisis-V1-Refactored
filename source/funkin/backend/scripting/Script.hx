@@ -94,6 +94,7 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"MarkdownUtil"	  => funkin.backend.utils.MarkdownUtil,
 			"EngineUtil"		=> funkin.backend.utils.EngineUtil,
 			"MemoryUtil"		=> funkin.backend.utils.MemoryUtil,
+			#if ALLOW_MULTITHREADING "ThreadUtil" => funkin.backend.utils.ThreadUtil, #end
 			"BitmapUtil"		=> funkin.backend.utils.BitmapUtil,
 		];
 	}
