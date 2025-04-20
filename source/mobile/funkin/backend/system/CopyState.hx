@@ -206,7 +206,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		}
 	}
 
-	public function getFileBytes(file:String):ByteArray
+	public static function getFileBytes(file:String):ByteArray
 	{
 		switch (Path.extension(file).toLowerCase())
 		{
