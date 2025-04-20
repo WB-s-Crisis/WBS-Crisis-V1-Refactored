@@ -1,6 +1,7 @@
 package funkin.backend.utils;
 
 import openfl.display.BitmapData;
+import flixel.util.FlxTimer;
 import openfl.geom.Matrix;
 import flixel.util.FlxColor;
 
