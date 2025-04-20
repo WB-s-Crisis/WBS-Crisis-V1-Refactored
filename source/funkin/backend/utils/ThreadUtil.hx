@@ -2,6 +2,7 @@ package funkin.backend.utils;
 
 #if ALLOW_MULTITHREADING
 import lime.system.ThreadPool;
+import lime.system.WorkOutput;
 class ThreadUtil {
 	/**
 	 * Creates a new Thread with an error handler.
