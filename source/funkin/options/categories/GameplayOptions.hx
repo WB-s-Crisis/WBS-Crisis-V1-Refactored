@@ -45,7 +45,7 @@ class GameplayOptions extends OptionsScreen {
 			"splashSkin"
 		));
 		add(new Checkbox(
-			"FPS Counter":
+			"FPS Counter",
 			"If checked, FPS and some DEBUG information can be activated to watch.",
 			"fpsCounter"));
 		add(new Checkbox(
