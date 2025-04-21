@@ -10,10 +10,12 @@ import funkin.backend.system.Conductor;
 import funkin.backend.system.Controls;
 import funkin.options.PlayerSettings;
 import flixel.FlxSubState;
+import flixel.util.typeLimit.OneOfTwo;
 #if TOUCH_CONTROLS
 import mobile.funkin.backend.utils.MobileData;
 import mobile.extra.Hitbox;
-import mobile.extra.TouchPad;
+import mobile.extra.VirtualPad;
+import mobile.extra.GamePad;
 import mobile.extra.VirtualPad;
 import flixel.FlxCamera;
 import flixel.util.FlxDestroyUtil;
@@ -102,8 +104,7 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 
 	#if TOUCH_CONTROLS
 	public var touchPad:TouchPad;
-	public var hitbox:Hitbox;
-	public var virtualPad:VirtualPad;
+	public var gamePad:GamePad;
 	public var hboxCam:FlxCamera;
 	public var tpadCam:FlxCamera;
 	
@@ -142,29 +143,25 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 		FlxG.cameras.add(hboxCam, defaultDrawTarget);
 
 		if(Options.buttonsType == "HITBOX") {
-			hitbox = new Hitbox(extraMode);
-			hitbox.cameras = [hboxCam];
-			add(hitbox);
+			gamePad = new Hitbox(extraMode);
 		}else if(Options.buttonsType == "LEFT_FULL" || Options.buttonsType == "RIGHT_FULL" || Options.buttonsType == "CUSTOM") {
-			virtualPad = new VirtualPad(Options.buttonsType, extraMode);
-			virtualPad.cameras = [hboxCam];
-			add(virtualPad);
+			gamePad = new VirtualPad(Options.buttonsType, extraMode);
+		}
+		
+		if(gamePad != null) {
+			gamePad.cameras = [hboxCam];
+			add(gamePad);
 		}
 		#end
 	}
 
 	public function removeGamepad() {
 		#if TOUCH_CONTROLS
-		if (hitbox != null)
+		if (gamePad != null)
 		{
-			remove(hitbox);
-			hitbox = FlxDestroyUtil.destroy(hitbox);
-			hitbox = null;
-		}
-		if(virtualPad != null) {
-			remove(virtualPad);
-			FlxDestroyUtil.destroy(virtualPad);
-			virtualPad = null;
+			remove(gamePad);
+			gamePad = FlxDestroyUtil.destroy(gamePad);
+			gamePad = null;
 		}
 
 		if(hboxCam != null)
@@ -198,7 +195,6 @@ class MusicBeatSubstate extends FlxSubState implements IBeatReceiver
 		super.destroy();
 		call("destroy");
 		stateScripts = FlxDestroyUtil.destroy(stateScripts);
-
 	}
 
 	public function new(scriptsAllowed:Bool = true, ?scriptName:String) {

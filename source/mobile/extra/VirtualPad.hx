@@ -45,6 +45,9 @@ class VirtualPad extends MobileInputManager
 	public var buttonExtra:TouchButton = new TouchButton(0, 0, [MobileInputID.EXTRA_1]);
 
 	public var instance:MobileInputManager;
+	public var onButtonDown:FlxTypedSignal<TouchButton->Void> = new FlxTypedSignal<TouchButton->Void>();
+	public var onButtonUp:FlxTypedSignal<TouchButton->Void> = new FlxTypedSignal<TouchButton->Void>();
+
 	public static var curStatus:String = "NONE";
 
 	public function new(Status:String, extraButton:Bool = false)
@@ -100,6 +103,8 @@ class VirtualPad extends MobileInputManager
 	override public function destroy()
 	{
 		super.destroy();
+		onButtonUp.destroy();
+		onButtonDown.destroy();
 
 		for (fieldName in Reflect.fields(this))
 		{
@@ -150,6 +155,9 @@ class VirtualPad extends MobileInputManager
 		button.statusIndicatorType = BRIGHTNESS;
 		button.indicateStatus();
 		button.parentAlpha = button.alpha;
+		
+		button.onDown.callback = () -> onButtonDown.dispatch(button);
+		button.onOut.callback = button.onUp.callback = () -> onButtonUp.dispatch(button);
 
 		return button;
 	}
@@ -173,7 +181,7 @@ class VirtualPad extends MobileInputManager
 		return super.set_alpha(Value);
 	}
 	
-	private static inline function buttonNameConnectID(button:String):Int {
+	private static function buttonNameConnectID(button:String):Int {
 		return switch(button) {
 			case "buttonLeft": 0;
 			case "buttonDown": 1;

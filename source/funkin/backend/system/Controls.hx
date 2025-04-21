@@ -956,10 +956,8 @@ class Controls extends FlxActionSet
 			if (state.touchPad != null)
 				bools[0] = state.touchPad.buttonJustPressed(id);
 
-			if (state.hitbox != null)
-				bools[1] = state.hitbox.instance.buttonJustPressed(id);
-			else if(state.virtualPad != null)
-				bools[1] = state.virtualPad.instance.buttonJustPressed(id);
+			if (state.gamePad != null)
+				bools[1] = state.gamePad.instance.buttonJustPressed(id);
 		}
 
 		if (substate != null)
@@ -967,10 +965,8 @@ class Controls extends FlxActionSet
 			if (substate.touchPad != null)
 				bools[2] = substate.touchPad.buttonJustPressed(id);
 
-			if (substate.hitbox != null)
-				bools[3] = substate.hitbox.instance.buttonJustPressed(id);
-			else if(substate.virtualPad != null)
-				bools[1] = substate.virtualPad.instance.buttonJustPressed(id);
+			if (substate.gamePad != null)
+				bools[3] = substate.gamePad.instance.buttonJustPressed(id);
 		}
 
 		return bools.contains(true);
@@ -987,10 +983,8 @@ class Controls extends FlxActionSet
 			if (state.touchPad != null)
 				bools[0] = state.touchPad.buttonJustReleased(id);
 
-			if (state.hitbox != null)
-				bools[1] = state.hitbox.instance.buttonJustReleased(id);
-			else if(state.virtualPad != null)
-				bools[1] = state.virtualPad.instance.buttonJustReleased(id);
+			if (state.gamePad != null)
+				bools[1] = state.gamePad.instance.buttonJustReleased(id);
 		}
 
 		if (substate != null)
@@ -998,10 +992,8 @@ class Controls extends FlxActionSet
 			if (substate.touchPad != null)
 				bools[2] = substate.touchPad.buttonJustReleased(id);
 
-			if (substate.hitbox != null)
-				bools[3] = substate.hitbox.instance.buttonJustReleased(id);
-			if (substate.virtualPad != null)
-				bools[3] = substate.virtualPad.instance.buttonJustReleased(id);
+			if (substate.gamePad != null)
+				bools[3] = substate.gamePad.instance.buttonJustReleased(id);
 		}
 
 		return bools.contains(true);
@@ -1018,10 +1010,8 @@ class Controls extends FlxActionSet
 			if (state.touchPad != null)
 				bools[0] = state.touchPad.buttonPressed(id);
 
-			if (state.hitbox != null)
-				bools[1] = state.hitbox.instance.buttonPressed(id);
-			else if(state.virtualPad != null)
-				bools[1] = state.virtualPad.instance.buttonPressed(id);
+			if (state.gamePad != null)
+				bools[1] = state.gamePad.instance.buttonPressed(id);
 		}
 
 		if (substate != null)
@@ -1029,10 +1019,8 @@ class Controls extends FlxActionSet
 			if (substate.touchPad != null)
 				bools[2] = substate.touchPad.buttonPressed(id);
 
-			if (substate.hitbox != null)
-				bools[3] = substate.hitbox.instance.buttonPressed(id);
-			else if(substate.virtualPad != null)
-				bools[3] = substate.virtualPad.instance.buttonPressed(id);
+			if (substate.gamePad != null)
+				bools[3] = substate.gamePad.instance.buttonPressed(id);
 		}
 
 		return bools.contains(true);
@@ -1049,10 +1037,8 @@ class Controls extends FlxActionSet
 			if (state.touchPad != null)
 				bools[0] = state.touchPad.buttonReleased(id);
 
-			if (state.hitbox != null)
-				bools[1] = state.hitbox.instance.buttonReleased(id);
-			else if(state.virtualPad != null)
-				bools[1] = state.virtualPad.instance.buttonReleased(id);
+			if (state.gamePad != null)
+				bools[1] = state.gamePad.instance.buttonReleased(id);
 		}
 
 		if (substate != null)
@@ -1060,10 +1046,8 @@ class Controls extends FlxActionSet
 			if (substate.touchPad != null)
 				bools[2] = substate.touchPad.buttonReleased(id);
 
-			if (substate.hitbox != null)
-				bools[3] = substate.hitbox.instance.buttonReleased(id);
-			else if(substate.virtualPad != null)
-				bools[3] = substate.virtualPad.instance.buttonReleased(id);
+			if (substate.gamePad != null)
+				bools[3] = substate.gamePad.instance.buttonReleased(id);
 		}
 
 		return bools.contains(true);

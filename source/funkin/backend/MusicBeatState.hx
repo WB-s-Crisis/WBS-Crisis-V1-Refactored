@@ -16,6 +16,7 @@ import funkin.options.PlayerSettings;
 import mobile.funkin.backend.utils.MobileData;
 import mobile.extra.Hitbox;
 import mobile.extra.VirtualPad;
+import mobile.extra.GamePad;
 import mobile.extra.TouchPad;
 import flixel.FlxCamera;
 import flixel.util.FlxDestroyUtil;
@@ -118,8 +119,7 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		
 	#if TOUCH_CONTROLS
 	public var touchPad:TouchPad;
-	public var virtualPad:VirtualPad;
-	public var hitbox:Hitbox;
+	public var gamePad:GamePad;
 	public var hboxCam:FlxCamera;
 	public var tpadCam:FlxCamera;
 
@@ -158,27 +158,25 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		FlxG.cameras.add(hboxCam, defaultDrawTarget);
 
 		if(Options.buttonsType == "HITBOX") {
-			hitbox = new Hitbox(extraMode);
-			hitbox.cameras = [hboxCam];
-			add(hitbox);
+			gamePad = new Hitbox(extraMode);
 		}else if(Options.buttonsType == "LEFT_FULL" || Options.buttonsType == "RIGHT_FULL" || Options.buttonsType == "CUSTOM") {
-			virtualPad = new VirtualPad(Options.buttonsType, extraMode);
-			virtualPad.cameras = [hboxCam];
-			add(virtualPad);
+			gamePad = new VirtualPad(Options.buttonsType, extraMode);
+		}
+		
+		if(gamePad != null) {
+			gamePad.cameras = [hboxCam];
+			add(gamePad);
 		}
 		#end
 	}
 
 	public function removeGamepad(cam:Bool = false) {
 		#if TOUCH_CONTROLS
-		if (hitbox != null)
+		if (gamePad != null)
 		{
-			remove(hitbox);
-			hitbox = FlxDestroyUtil.destroy(hitbox);
-		}
-		if(virtualPad != null) {
-			remove(virtualPad);
-			virtualPad = FlxDestroyUtil.destroy(virtualPad);
+			remove(gamePad);
+			gamePad = FlxDestroyUtil.destroy(gamePad);
+			gamePad = null;
 		}
 
 		if(hboxCam != null)
@@ -203,10 +201,10 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	override function destroy() {
 		// Touch Controls Related
-		//#if TOUCH_CONTROLS
-		//removeTouchPad();
-		//removeGamepad();
-		//#end
+		#if TOUCH_CONTROLS
+		removeTouchPad();
+		removeGamepad();
+		#end
 
 		// CNE Related
 		super.destroy();
