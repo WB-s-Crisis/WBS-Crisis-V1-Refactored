@@ -791,23 +791,23 @@ class CoolUtil
 
 		var errorMessages:Array<String> = [];
 		function traverse(currentPath:String) {
-			if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
-				final sb = FileSystem.readDirectory(currentPath);
-				if(sb.length > 0) for (item in sb) {
-					try {
+			try {
+				if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
+					final sb = FileSystem.readDirectory(currentPath);
+					if(sb.length > 0) for (item in sb) {
 						var fullPath = Path.addTrailingSlash(currentPath) + item;
 						if (FileSystem.isDirectory(fullPath)) {
 							traverse(fullPath);
 						} else {
 							files.push(reservePath ? fullPath : fullPath.substr(originPath.length));
 						}
-					} catch(e:haxe.Exception) {
-						errorMessages.push('Reading This Directory "$sb" Failed! (${e.message}) \n (${Std.string(e.stack)})');
+					}
+					else if(stayEmptyDirectory) {
+						files.push(reservePath ? currentPath : currentPath.substr(originPath.length));
 					}
 				}
-				else if(stayEmptyDirectory) {
-					files.push(reservePath ? currentPath : currentPath.substr(originPath.length));
-				}
+			} catch(e:haxe.Exception) {
+				errorMessages.push('Reading This Directory "$currentPath" Failed! \n (${e.message}) \n (${Std.string(e.stack)})');
 			}
 		}
 
