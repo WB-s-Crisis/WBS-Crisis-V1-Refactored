@@ -115,7 +115,7 @@ class VirtualPad extends MobileInputManager
 
 		var frames:FlxGraphic;
 		for (folder in [
-			'mods/${ModsFolder.currentModFolder}/mobile',
+			'${ModsFolder.modsPath}${ModsFolder.currentModFolder}/mobile',
 			'assets/mobile'
 		]) {
 				final path:String = '${folder}/images/virtualpad/${Graphic.toUpperCase()}.png';
