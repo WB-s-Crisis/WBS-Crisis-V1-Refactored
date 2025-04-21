@@ -51,6 +51,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static final IGNORE_FOLDER_FILE_NAME:String = "CopyState-Ignore.txt";
 	private static var directoriesToIgnore:Array<String> = [];
 	public static var locatedFiles:Array<String> = [];
+	//删除额外的文件以及目录
 	public static var vmFiles:Array<String> = [];
 	public static var maxLoopTimes:Int = 0;
 
@@ -95,6 +96,12 @@ class CopyState extends funkin.backend.MusicBeatState
 		add(loadedText);
 
 		thread = new ThreadPool(0, CoolUtil.getCPUThreadsCount());
+		thread.doWork.add(function(_) {
+			for(file in vmFiles) {
+				loopTimes++;
+				deleteExistFile(file);
+			}
+		});
 		thread.doWork.add(function(poop)
 		{
 			for (file in locatedFiles)
@@ -130,6 +137,7 @@ class CopyState extends funkin.backend.MusicBeatState
 				{
 					directoriesToIgnore = [];
 					locatedFiles = [];
+					vmFiles = [];
 					maxLoopTimes = 0;
 					FlxG.resetGame();
 				};
@@ -181,6 +189,20 @@ class CopyState extends funkin.backend.MusicBeatState
 		{
 			failedFiles.push('${getFile(file)} (${e.message})');
 			failedFilesStack.push('${getFile(file)} (${e.stack})');
+		}
+	}
+	
+	public function deleteExistFile(file:String) {
+		if(FileSystem.exists(file)) {
+			try {
+				if(FileSystem.isDirectory(file)) {
+					FileSystem.deleteDirectory(file);
+				}else {
+					FileSystem.deleteFile(file);
+				}
+			} catch(e:haxe.Exception) {
+				//没那个打算
+			}
 		}
 	}
 
@@ -239,7 +261,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	{
 		locatedFiles = Paths.assetsTree.list(null);
 		
-		vmFiles = CoolUtil.safeGetAllFiles(Sys.getCwd(), );
+		vmFiles = CoolUtil.safeGetAllFiles(Sys.getCwd(), false, true).filter((file) -> (!locatedFiles.contains(file) && (file.startsWith("assets/") || file.startsWith("mods/"))));
 
 		// removes unwanted assets
 		locatedFiles = locatedFiles.filter((file) -> {
@@ -270,8 +292,8 @@ class CopyState extends funkin.backend.MusicBeatState
 		}
 
 		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
-		maxLoopTimes = locatedFiles.length;
-		//lime.app.Application.current.window.alert(Std.string(locatedFiles));
+		maxLoopTimes = locatedFiles.length + vmFiles.length;
+		lime.app.Application.current.window.alert(Std.string(vmFiles));
 
 		return (maxLoopTimes <= 0);
 	}
