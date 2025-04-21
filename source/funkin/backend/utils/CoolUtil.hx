@@ -784,6 +784,45 @@ class CoolUtil
 		return file.file;
 	}
 
+	#if sys
+	@:noUsing public static inline function safeGetAllFiles(originPath:String, reservePath:Bool = false, stayEmptyDirectory = true, showErrorBox:Bool = #if mobile true #else false #end):Array<String> {
+		var files:Array<String> = [];
+		originPath = Path.addTrailingSlash(originPath);
+
+		var errorMessage:Array<String> = [];
+		function traverse(currentPath:String) {
+			if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
+				final sb = FileSystem.readDirectory(currentPath);
+				if(sb.length > 0) for (item in sb) {
+					try {
+						var fullPath = Path.addTrailingSlash(currentPath) + item;
+						if (FileSystem.isDirectory(fullPath)) {
+							traverse(fullPath);
+						} else {
+							files.push(reservePath ? fullPath : fullPath.substr(originPath.length));
+						}
+					} catch(e:haxe.Exception) {
+						errorMessages.push('Reading This Directory "$sb" Failed! (${e.message})');
+					}
+				}
+				else if(stayEmptyDirectory) {
+					files.push(currentPath);
+				}
+			}
+		}
+
+		traverse(originPath);
+		if(errorMessages.length > 0) {
+			for(error in errorMessages) {
+				if(showErrorBox) lime.app.Application.current.window.alert(error, "Safe Get All FilesError!");
+				Logs.trace(error, ERROR);
+			}
+			return [];
+		}
+		return files;
+	}
+	#end
+
 	/**
 	 * Converts a string of "1..3,5,7..9,8..5" into an array of numbers like [1,2,3,5,7,8,9,8,7,6,5]
 	 * @param input String to parse
