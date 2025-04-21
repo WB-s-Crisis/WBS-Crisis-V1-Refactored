@@ -51,27 +51,42 @@ class AddonsManager {
 				}
 			
 				if(scWithoutExtension.contains(split[0])) {
-					var script:HScript = null;
+					var script = null;
 					if(!_cacheScripts.exists(split[0])) {
-						script = cast(Script.create(Paths.script("addons/" + split[0])), HScript);
-						script.load();
-						_cacheScripts.set(split[0], script);
-						
-						addonsScripts.add(script);
+							script = Script.create(Paths.script(rawPath));
+							if(script is HScript) {
+								var hscript = cast(script, HScript);
+								hscript.load();
+								
+								if(hscript.lastThrow != null) return;
+
+								_cacheScripts.set(split[0], hscript);
+								addonsScripts.add(hscript);
+							}else {
+								_errorHandler("
+### 在尝试编译脚本时发生错误 ###
+* 我猜你该不会导入的是其他格式的东东吧？
+* 真是一条杂鱼呢～
+* ......
+								");
+								return;
+							}
 					}else {
 						script = _cacheScripts.get(split[0]);
 					}
 
-					if(script.interp.customClasses.exists(split[0])) {
-						sb.set(split[0], script.interp.customClasses.get(split[0]));
-					}else {
-						_errorHandler("
+					if(script is HScript) {
+						if(cast(script, HScript).interp.customClasses.exists(split[0])) {
+							sb.set(split[0], cast(script, HScript).interp.customClasses.get(split[0]));
+						}else {
+							_errorHandler("
 ### 在尝试导入\"" + split[0] + "\"时发生错误!!!! ###
 * 你的\"importAddons\"参数只导入了了文件
 * 你还需要导入指定的类
 * ......
 * 亦或是你可以尝试使用\"*\"符号来导入该脚本的所有类
-						");
+							");
+						}
 					}
 				
 					return;
@@ -110,13 +125,26 @@ class AddonsManager {
 					if(isLockingFile) {
 						var rawPath = curPath;
 					
-						var script:HScript = null;
+						var script = null;
 						if(!_cacheScripts.exists(_cachePath)) {
-							script = cast(Script.create(Paths.script(rawPath)), HScript);
-							script.load();
+							script = Script.create(Paths.script(rawPath));
+							if(script is HScript) {
+								var hscript = cast(script, HScript);
+								hscript.load();
 								
-							_cacheScripts.set(_cachePath, script);
-							addonsScripts.add(script);
+								if(hscript.lastThrow != null) return;
+
+								_cacheScripts.set(_cachePath, hscript);
+								addonsScripts.add(hscript);
+							}else {
+								_errorHandler("
+### 在尝试编译脚本时发生错误 ###
+* 我猜你该不会导入的是其他格式的东东吧？
+* 真是一条杂鱼呢～
+* ......
+								");
+								return;
+							}
 						}else {
 							script = _cacheScripts.get(_cachePath);
 						}
@@ -132,10 +160,11 @@ class AddonsManager {
 * ......
 							");
 						}else {
-							if(script.interp.customClasses.exists(sp)) {
-								sb.set(sp, script.interp.customClasses.get(sp));
+							if(script is HScript)
+							if(cast(script, HScript).interp.customClasses.exists(sp)) {
+								sb.set(sp, cast(script, HScript).interp.customClasses.get(sp));
 							}else if(sp == "*") {
-								for(k=>c in script.interp.customClasses) {
+								for(k=>c in cast(script, HScript).interp.customClasses) {
 									sb.set(k, c);
 								}
 							}else {
@@ -158,33 +187,48 @@ class AddonsManager {
 					if(scWithoutExtension.contains(sp)) {
 						isLockingFile = true;
 						curPath += (StringTools.endsWith(curPath, "/") ? "" : "/") + sp;
-						_cachePath += '.${sp}';
+						_cachePath += (i < 1 ? "" : ".") + sp;
 					
 						if(i == split.length - 1) {
 							var rawPath = curPath;
 							
-							var script:HScript = null;
+							var script = null;
 							if(!_cacheScripts.exists(_cachePath)) {
-								script = cast(Script.create(Paths.script(rawPath)), HScript);
-								script.load();
+								script = Script.create(Paths.script(rawPath));
+								if(script is HScript) {
+									final hscript = cast(script, HScript);
+									hscript.load();
+									
+									if(hscript.lastThrow != null) return;
 								
-								_cacheScripts.set(_cachePath, script);
-								addonsScripts.add(script);
+									_cacheScripts.set(cachePath, hscript);
+									addonsScripts.add(hscript);
+								}else {
+									_errorHandler("
+### 在尝试编译脚本时发生错误 ###
+* 我猜你该不会导入的是其他格式的东东吧？
+* 真是一条杂鱼呢～
+* ......
+									");
+									return;
+								}
 							}else {
 								script = _cacheScripts.get(_cachePath);
 							}
 
-							if(script.interp.customClasses.exists(sp)) {
-								sb.set(sp, script.interp.customClasses.get(sp));
-							}else {
-								_errorHandler("
+							if(script is HScript) {
+								if(cast(script, HScript).interp.customClasses.exists(sp)) {
+									sb.set(sp, cast(script, HScript).interp.customClasses.get(sp));
+								}else {
+									_errorHandler("
 ### 在尝试导入\"" + _cachePath + "\"时发生错误!!!! ###
 * 你的\"importAddons\"参数只导入了脚本文件 --[\"" + rawPath + "." + script.extension + "\"]
 * 或者说是没有与脚本文件名重名的类
 * 你还需要导入指定的类
 * ......
 * 亦或是你可以尝试使用\"*\"符号来导入该脚本的所有类
-								");
+									");
+								}
 							}
 						
 							break;
@@ -195,7 +239,7 @@ class AddonsManager {
 				
 					if(sd.contains(sp) && !isLockingFile) {
 						curPath += (StringTools.endsWith(curPath, "/") ? "" : "/") + sp;
-						_cachePath += '.${sp}';
+						_cachePath += (i < 1 ? "" : ".") + sp;
 					
 						if(i == split.length - 1) {
 							_errorHandler("
@@ -237,11 +281,7 @@ class AddonsManager {
 	
 	private static function onModSwitch(idk:String) {
 		if(addonsScripts.scripts.length > 0) {
-			var i:Int = -1;
-			while(i < addonsScripts.scripts.length - 1) {
-				i++;
-				addonsScripts.scripts.pop();
-			}
+			addonsScripts.scripts.clear();
 		}
 		
 		if(_cacheScripts != null) {
@@ -250,10 +290,6 @@ class AddonsManager {
 	}
 	
 	private static function _errorHandler(content:String) {
-		#if desktop
-		Logs.trace(content, ERROR);
-		#elseif mobile
-		lime.app.Application.current.window.alert(content, "错误！！！");
-		#end
+		funkin.backend.utils.NativeAPI.showMessageBOX("Addons Script 错误！", content);
 	}
 }

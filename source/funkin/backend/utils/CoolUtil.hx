@@ -802,7 +802,7 @@ class CoolUtil
 							files.push(reservePath ? fullPath : fullPath.substr(originPath.length));
 						}
 					} catch(e:haxe.Exception) {
-						errorMessages.push('Reading This Directory "$sb" Failed! (${e.message})');
+						errorMessages.push('Reading This Directory "$sb" Failed! (${e.message}) \n (${Std.string(e.stack)})');
 					}
 				}
 				else if(stayEmptyDirectory) {
@@ -814,8 +814,8 @@ class CoolUtil
 		traverse(originPath);
 		if(errorMessages.length > 0) {
 			for(error in errorMessages) {
-				if(showErrorBox) lime.app.Application.current.window.alert(error, "Safe Get All FilesError!");
-				Logs.trace(error, ERROR);
+				if(showErrorBox) lime.app.Application.current.window.alert(error, "Get All Files Error!");
+				Logs.trace("Get All Files Error: "error, ERROR);
 			}
 			return [];
 		}

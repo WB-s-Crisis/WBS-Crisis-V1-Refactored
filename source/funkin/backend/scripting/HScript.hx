@@ -11,6 +11,9 @@ class HScript extends Script {
 	public var parser:Parser;
 	public var expr:Expr;
 	public var code:String = null;
+	
+	public var lastThrow:Error = null;
+	
 	//public var folderlessPath:String;
 	var __importedPaths:Array<String>;
 
@@ -101,6 +104,8 @@ class HScript extends Script {
 	}
 
 	private function _errorHandler(error:Error) {
+		lastThrow = error;
+	
 		var fileName = error.origin;
 		if(remappedNames.exists(fileName))
 			fileName = remappedNames.get(fileName);

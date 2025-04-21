@@ -37,7 +37,7 @@ class MobileOptions extends OptionsScreen {
 			"Change Game Play Buttons States",
 			enterAndEditButtons));
 		add(new ArrayOption(
-			"Hitbox Position",
+			"Extra Position",
 			"Choose The Hitbox Was Down Or Up When Appeared Extra Button",
 			["BOTTOM", "TOP"],
 			["bottom", "top"],
