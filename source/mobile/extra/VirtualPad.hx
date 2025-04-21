@@ -115,15 +115,16 @@ class VirtualPad extends MobileInputManager
 
 		var frames:FlxGraphic;
 		for (folder in [
-			'${ModsFolder.modsPath}${ModsFolder.currentModFolder}/mobile',
-			Paths.getPath('mobile')
-		])
-			for (file in [Graphic.toUpperCase()])
-			{
-				final path:String = '${folder}/images/virtualpad/${file}.png';
-				if (FileSystem.exists(path))
+			'mods/${ModsFolder.currentModFolder}/mobile',
+			'assets/mobile'
+		]) {
+				final path:String = '${folder}/images/virtualpad/${Graphic.toUpperCase()}.png';
+				final ex:Bool = FileSystem.exists(path);
+				lime.app.Application.current.window.alert(Std.string(ex), path);
+				if (ex) {
 					buttonLabelGraphicPath = path;
-			}
+				}
+		}
 
 		if (FileSystem.exists(buttonLabelGraphicPath))
 			frames = FlxGraphic.fromBitmapData(BitmapData.fromBytes(File.getBytes(buttonLabelGraphicPath)));
