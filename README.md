@@ -85,9 +85,22 @@ In the future (when the engine won't be a WIP anymore) we're gonna also publish 
   <details>
     <summary>Source Programmer</summary>
 
-- Credits to [QQQEB](https://b23.tv/Xab96ta) Make This Mod.
+- Credits to [QQQEB](https://b23.tv/Xab96ta) Edit The **Main Game**.
 
-- Credits to [GeXie(VapireMox)](https://b23.tv/Rfynz48) Help.
+- Credits to [GeXie(VapireMox)](https://b23.tv/Rfynz48) help the source.
+  </details>
+  <details>
+    <summary>Script Programmer</summary>
+
+- Credits to [Dry Orange](https://b23.tv/8HmvZ07) Execute ***Main***.
+
+- Credits to [Xue Xi](https://b23.tv/9Bth4Gc) Make ***Events***.
+
+- Credits to [FNF Mobile Player](https://b23.tv/nhGA3Az) Execute ***BIG SHOT***.
+
+- Credits to [QQQEB](https://b23.tv/Xab96ta) Make **ZOMBIE**.
+
+- Credits to [GeXie(VapireMox)](https://b23.tv/Rfynz48) do odd jobs（打杂...）.
   </details>
 </details>
 
