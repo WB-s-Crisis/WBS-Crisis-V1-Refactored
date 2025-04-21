@@ -241,9 +241,9 @@ class CopyState extends funkin.backend.MusicBeatState
 		// removes unwanted assets
 		locatedFiles = locatedFiles.filter((file) -> {
 			if(OpenFLAssets.exists(getFile(file))) {
-			    if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && (getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end);
-			    else return (file.startsWith("assets/") || file.startsWith("mods/"));
-		        }else return false;
+				if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && (getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end);
+				else return (file.startsWith("assets/") || file.startsWith("mods/"));
+			}else return false;
 		});
 
 		var filesToRemove:Array<String> = [];
