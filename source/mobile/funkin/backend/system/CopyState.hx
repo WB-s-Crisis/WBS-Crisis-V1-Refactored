@@ -51,6 +51,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static final IGNORE_FOLDER_FILE_NAME:String = "CopyState-Ignore.txt";
 	private static var directoriesToIgnore:Array<String> = [];
 	public static var locatedFiles:Array<String> = [];
+	public static var vmFiles:Array<String> = [];
 	public static var maxLoopTimes:Int = 0;
 
 	public var loadingImage:FlxSprite;
@@ -237,6 +238,8 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static function checkExistingFiles():Bool
 	{
 		locatedFiles = Paths.assetsTree.list(null);
+		
+		vmFiles = CoolUtil.safeGetAllFiles(Sys.getCwd(), );
 
 		// removes unwanted assets
 		locatedFiles = locatedFiles.filter((file) -> {
