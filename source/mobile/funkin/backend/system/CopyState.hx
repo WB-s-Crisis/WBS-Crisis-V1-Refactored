@@ -198,7 +198,12 @@ class CopyState extends funkin.backend.MusicBeatState
 				if(FileSystem.isDirectory(file)) {
 					FileSystem.deleteDirectory(file);
 				}else {
+					final directory = Path.directory(file);
 					FileSystem.deleteFile(file);
+					//检测若是空目录则清除
+					if(FileSystem.readDirectory(directory).length == 0) {
+						FileSystem.deleteDirectory(directory);
+					}
 				}
 			} catch(e:haxe.Exception) {
 				//没那个打算
