@@ -169,18 +169,16 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		#end
 	}
 
-	public function removeGamepad() {
+	public function removeGamepad(cam:Bool = false) {
 		#if TOUCH_CONTROLS
 		if (hitbox != null)
 		{
 			remove(hitbox);
 			hitbox = FlxDestroyUtil.destroy(hitbox);
-			hitbox = null;
 		}
 		if(virtualPad != null) {
 			remove(virtualPad);
 			virtualPad = FlxDestroyUtil.destroy(virtualPad);
-			virtualPad = null;
 		}
 
 		if(hboxCam != null)
@@ -205,10 +203,10 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	override function destroy() {
 		// Touch Controls Related
-		#if TOUCH_CONTROLS
-		removeTouchPad();
-		removeGamepad();
-		#end
+		//#if TOUCH_CONTROLS
+		//removeTouchPad();
+		//removeGamepad();
+		//#end
 
 		// CNE Related
 		super.destroy();
