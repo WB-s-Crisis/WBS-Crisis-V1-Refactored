@@ -118,10 +118,8 @@ class VirtualPad extends MobileInputManager
 			'${ModsFolder.modsPath}${ModsFolder.currentModFolder}/mobile',
 			'assets/mobile'
 		]) {
-				final path:String = '${folder}/images/virtualpad/${Graphic.toUpperCase()}.png';
-				final ex:Bool = FileSystem.exists(path);
-				lime.app.Application.current.window.alert(Std.string(ex), path);
-				if (ex) {
+				final path:String = '${folder}/images/virtualpad/${Graphic.toLowerCase()}.png';
+				if (FileSystem.exists(path)) {
 					buttonLabelGraphicPath = path;
 				}
 		}
