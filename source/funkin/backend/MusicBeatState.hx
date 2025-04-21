@@ -179,7 +179,7 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		}
 		if(virtualPad != null) {
 			remove(virtualPad);
-			FlxDestroyUtil.destroy(virtualPad);
+			virtualPad = FlxDestroyUtil.destroy(virtualPad);
 			virtualPad = null;
 		}
 

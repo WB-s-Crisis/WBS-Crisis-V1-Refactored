@@ -90,6 +90,7 @@ class VirtualPad extends MobileInputManager
 
 		curStatus = Status;
 		alpha = Options.controlsAlpha;
+
 		scrollFactor.set();
 		updateTrackedButtons();
 
