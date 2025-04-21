@@ -74,10 +74,10 @@ class Main extends Sprite
 		originCwd = Sys.getCwd();
 
 		#if mobile
-		StorageUtil.checkStorageDirectory();
 		#if (android && FOR_MOD_DEBUGER)
 		StorageUtil.requestPermissions();
 		#end
+		StorageUtil.checkStorageDirectory();
 		Sys.setCwd(StorageUtil.getStorageDirectory());
 		#end
 
