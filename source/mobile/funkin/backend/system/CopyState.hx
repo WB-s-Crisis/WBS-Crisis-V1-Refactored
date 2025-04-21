@@ -298,7 +298,7 @@ class CopyState extends funkin.backend.MusicBeatState
 
 		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
 		maxLoopTimes = locatedFiles.length + vmFiles.length;
-		lime.app.Application.current.window.alert(Std.string(vmFiles));
+		//lime.app.Application.current.window.alert(Std.string(vmFiles));
 
 		return (maxLoopTimes <= 0);
 	}
