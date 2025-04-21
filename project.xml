@@ -120,8 +120,6 @@
 	<!-- Comment this out to prevent extending classes in hscript.
 		 Reduces compilation time at the cost of limited HScript flexibility. !-->
 	<define name="CUSTOM_CLASSES" />
-	
-	<define name="FOR_MOD_DEBUGER" />
 
 	<!-- Comment this out to disable multithreading !-->
 	<haxedef name="ALLOW_MULTITHREADING" unless="web || flash" />
