@@ -22,20 +22,40 @@
 
 package mobile.funkin.backend.utils;
 
+#if sys
+import sys.FileSystem;
+#end
+import haxe.io.Path;
+
 /**
  * A storage class for mobile.
- * @author Karim Akra and Homura Akemi (HomuHomu833)
+ * @base author Karim Akra and Homura Akemi (HomuHomu833)
  */
 class StorageUtil
 {
 	#if sys
-	public static function getStorageDirectory():String
-		return #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end;
+	public inline static function getStorageDirectory():String
+		return #if !FOR_MOD_DEBUGER Path.addTrailingSlash(getOriginStorageDirectory() + "I_AM_EVERYTHING") #else getOriginStorageDirectory() #end;
+	
+	private static function getOriginStorageDirectory():String
+		return #if FOR_MOD_DEBUGER #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end #else #if (android || ios) lime.system.System.applicationStorageDirectory #else Sys.getCwd() #end #end;
+	
+	public static function checkStorageDirectory() {
+		try {
+			final storageD:String = getStorageDirectory();
+			if(!FileSystem.exists(storageD)) {
+				FileSystem.createDirectory(storageD);
+			}
+		} catch(e:Dynamic) {
+			//...不太清楚要不要冲
+		}
+	}
 
 	#if android
 	// always force path due to haxe
-	public static function getExternalStorageDirectory():String
-		return '/sdcard/.WB\'s Crisis/';
+	//懒得改了......
+	public inline static function getExternalStorageDirectory():String
+		return #if FOR_MOD_DEBUGER '/sdcard/.WB\'s Crisis/' #else getStorageDirectory() #end;
 
 	public static function requestPermissions():Void
 	{

@@ -43,7 +43,7 @@ using StringTools;
 
 /**
  * ...
- * @author: Karim Akra
+ * @base author: Karim Akra
  */
 class CopyState extends funkin.backend.MusicBeatState
 {
@@ -51,6 +51,8 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static final IGNORE_FOLDER_FILE_NAME:String = "CopyState-Ignore.txt";
 	private static var directoriesToIgnore:Array<String> = [];
 	public static var locatedFiles:Array<String> = [];
+	//删除额外的文件以及目录
+	public static var vmFiles:Array<String> = [];
 	public static var maxLoopTimes:Int = 0;
 
 	public var loadingImage:FlxSprite;
@@ -66,9 +68,9 @@ class CopyState extends funkin.backend.MusicBeatState
 
 	override function create()
 	{
-		locatedFiles = [];
-		maxLoopTimes = 0;
-		checkExistingFiles();
+		//locatedFiles = [];
+		//maxLoopTimes = 0;
+		//checkExistingFiles();
 		if (maxLoopTimes <= 0)
 		{
 			FlxG.resetGame();
@@ -94,6 +96,12 @@ class CopyState extends funkin.backend.MusicBeatState
 		add(loadedText);
 
 		thread = new ThreadPool(0, CoolUtil.getCPUThreadsCount());
+		thread.doWork.add(function(_) {
+			for(file in vmFiles) {
+				loopTimes++;
+				deleteExistFile(file);
+			}
+		});
 		thread.doWork.add(function(poop)
 		{
 			for (file in locatedFiles)
@@ -127,6 +135,10 @@ class CopyState extends funkin.backend.MusicBeatState
 				
 				FlxG.sound.play(Paths.sound('menu/confirm')).onComplete = () ->
 				{
+					directoriesToIgnore = [];
+					locatedFiles = [];
+					vmFiles = [];
+					maxLoopTimes = 0;
 					FlxG.resetGame();
 				};
 		
@@ -145,39 +157,56 @@ class CopyState extends funkin.backend.MusicBeatState
 
 	public function copyAsset(file:String)
 	{
-		if (!FileSystem.exists(file))
+		var directory = Path.directory(file);
+		if (!FileSystem.exists(directory))
+			FileSystem.createDirectory(directory);
+		try
 		{
-			var directory = Path.directory(file);
-			if (!FileSystem.exists(directory))
-				FileSystem.createDirectory(directory);
-			try
+			if (OpenFLAssets.exists(getFile(file)))
 			{
-				if (OpenFLAssets.exists(getFile(file)))
-				{
-					if (textFilesExtensions.contains(Path.extension(file)))
-						createContentFromInternal(file);
-					else
-					{
-						var path:String = '';
-						#if android
-						if (file.startsWith('mods/'))
-							path = StorageUtil.getExternalStorageDirectory() + file;
-						else
-						#end
-							path = file;
-						File.saveBytes(path, getFileBytes(getFile(file)));
-					}
-				}
+				if (textFilesExtensions.contains(Path.extension(file)))
+					createContentFromInternal(file);
 				else
 				{
-					failedFiles.push(getFile(file) + " (File Dosen't Exist)");
-					failedFilesStack.push('Asset ${getFile(file)} does not exist.');
+					var path:String = '';
+					#if android
+					if (file.startsWith('mods/'))
+						path = StorageUtil.getExternalStorageDirectory() + file;
+					else
+					#end
+						path = file;
+
+					File.saveBytes(path, getFileBytes(getFile(file)));
 				}
 			}
-			catch (e:haxe.Exception)
+			else
 			{
-				failedFiles.push('${getFile(file)} (${e.message})');
-				failedFilesStack.push('${getFile(file)} (${e.stack})');
+				failedFiles.push(getFile(file) + " (File Dosen't Exist)");
+				failedFilesStack.push('Asset ${getFile(file)} does not exist.');
+			}
+		}
+		catch (e:haxe.Exception)
+		{
+			failedFiles.push('${getFile(file)} (${e.message})');
+			failedFilesStack.push('${getFile(file)} (${e.stack})');
+		}
+	}
+	
+	public function deleteExistFile(file:String) {
+		if(FileSystem.exists(file)) {
+			try {
+				if(FileSystem.isDirectory(file)) {
+					FileSystem.deleteDirectory(file);
+				}else {
+					final directory = Path.directory(file);
+					FileSystem.deleteFile(file);
+					//检测若是空目录则清除
+					if(FileSystem.readDirectory(directory).length == 0) {
+						FileSystem.deleteDirectory(directory);
+					}
+				}
+			} catch(e:haxe.Exception) {
+				//没那个打算
 			}
 		}
 	}
@@ -197,6 +226,7 @@ class CopyState extends funkin.backend.MusicBeatState
 				fileData = '';
 			if (!FileSystem.exists(directory))
 				FileSystem.createDirectory(directory);
+
 			File.saveContent(Path.join([directory, fileName]), fileData);
 		}
 		catch (e:haxe.Exception)
@@ -235,17 +265,16 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static function checkExistingFiles():Bool
 	{
 		locatedFiles = Paths.assetsTree.list(null);
+		
+		vmFiles = CoolUtil.safeGetAllFiles(Sys.getCwd(), false, true).filter((file) -> (!locatedFiles.contains(file) && (file.startsWith("assets/") || file.startsWith("mods/"))));
 
 		// removes unwanted assets
-		var assets = locatedFiles.filter(folder -> folder.startsWith('assets/'));
-		var mods = locatedFiles.filter(folder -> folder.startsWith('mods/'));
-		locatedFiles = assets.concat(mods);
-		locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(file));
-		#if android
-		for (file in locatedFiles)
-			if (file.startsWith('mods/'))
-				locatedFiles = locatedFiles.filter(file -> !FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file));
-		#end
+		locatedFiles = locatedFiles.filter((file) -> {
+			if(OpenFLAssets.exists(getFile(file))) {
+				if(FileSystem.exists(file) #if android || (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file)) #end) return (file.startsWith("assets") || file.startsWith("mods")) && (getFileBytes(getFile(file)).length != #if android (file.startsWith("mods/") && FileSystem.exists(StorageUtil.getExternalStorageDirectory() + file) ? File.getBytes(StorageUtil.getExternalStorageDirectory() + file).length : File.getBytes(file).length) #else File.getBytes(file).length #end);
+				else return (file.startsWith("assets/") || file.startsWith("mods/"));
+			}else return false;
+		});
 
 		var filesToRemove:Array<String> = [];
 
@@ -268,8 +297,8 @@ class CopyState extends funkin.backend.MusicBeatState
 		}
 
 		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
-
-		maxLoopTimes = locatedFiles.length;
+		maxLoopTimes = locatedFiles.length + vmFiles.length;
+		//lime.app.Application.current.window.alert(Std.string(vmFiles));
 
 		return (maxLoopTimes <= 0);
 	}

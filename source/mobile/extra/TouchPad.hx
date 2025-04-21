@@ -33,7 +33,7 @@ import openfl.utils.Assets;
 
 /**
  * ...
- * @author: Karim Akra and Homura Akemi (HomuHomu833)
+ * @base author: Karim Akra and Homura Akemi (HomuHomu833)
  */
 @:access(mobile.extra.TouchButton)
 class TouchPad extends MobileInputManager
