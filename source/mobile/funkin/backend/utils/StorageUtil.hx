@@ -35,14 +35,14 @@ class StorageUtil
 {
 	#if sys
 	public inline static function getStorageDirectory():String
-		return #if !FOR_MOD_DEBUGER Path.addTrailingSlash(getOriginStorageDirectory() + "I_AM_EVERYTHING") #else getOriginStorageDirectory() #end;
+		return #if !FOR_MOD_DEBUGER Path.addTrailingSlash(StorageUtil.getOriginStorageDirectory() + "I_AM_EVERYTHING") #else StorageUtil.getOriginStorageDirectory() #end;
 	
 	private static function getOriginStorageDirectory():String
 		return #if FOR_MOD_DEBUGER #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end #else #if (android || ios) lime.system.System.applicationStorageDirectory #else Sys.getCwd() #end #end;
 	
 	public static function checkStorageDirectory() {
 		try {
-			final storageD:String = getStorageDirectory();
+			final storageD:String = StorageUtil.getStorageDirectory();
 			if(!FileSystem.exists(storageD)) {
 				FileSystem.createDirectory(storageD);
 			}
@@ -55,7 +55,7 @@ class StorageUtil
 	// always force path due to haxe
 	//懒得改了......
 	public inline static function getExternalStorageDirectory():String
-		return #if FOR_MOD_DEBUGER '/sdcard/.WB\'s Crisis/' #else getStorageDirectory() #end;
+		return #if FOR_MOD_DEBUGER '/sdcard/.WB\'s Crisis/' #else StorageUtil.getStorageDirectory() #end;
 
 	public static function requestPermissions():Void
 	{
