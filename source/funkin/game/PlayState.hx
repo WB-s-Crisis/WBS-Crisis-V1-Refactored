@@ -1557,7 +1557,7 @@ class PlayState extends MusicBeatState
 	public function endSong():Void
 	{
 		#if TOUCH_CONTROLS
-		gamePad.visible = false;
+		if(gamePad != null) gamePad.visible = false;
 		#end
 		scripts.call("onSongEnd");
 		canPause = false;
@@ -1601,7 +1601,7 @@ class PlayState extends MusicBeatState
 	 */
 	public function nextSong() {
 		#if TOUCH_CONTROLS
-		gamePad.visible = false;
+		if(gamePad != null) gamePad.visible = false;
 		#end
 		if (isStoryMode)
 		{
