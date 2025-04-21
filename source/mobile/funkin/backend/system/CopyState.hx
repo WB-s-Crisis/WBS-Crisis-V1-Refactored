@@ -43,7 +43,7 @@ using StringTools;
 
 /**
  * ...
- * @author: Karim Akra
+ * @base author: Karim Akra
  */
 class CopyState extends funkin.backend.MusicBeatState
 {

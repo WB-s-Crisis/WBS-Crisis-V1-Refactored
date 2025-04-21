@@ -12,6 +12,9 @@ import mobile.extra.VirtualPad;
 import mobile.extra.Hitbox;
 import flixel.FlxSubState;
 
+/**
+ * @author: GeXie(Vapire Mox)
+ */
 class ButtonSubState extends FlxSubState {
 	public var camButton:FlxCamera;
 

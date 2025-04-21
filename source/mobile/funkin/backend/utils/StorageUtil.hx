@@ -35,7 +35,7 @@ class StorageUtil
 {
 	#if sys
 	public inline static function getStorageDirectory():String
-		return #if FOR_MOD_DEBUGER Path.addTrailingSlash(getOriginStorageDirectory() + "I_AM_EVERYTHING") #else getOriginStorageDirectory() #end;
+		return #if !FOR_MOD_DEBUGER Path.addTrailingSlash(getOriginStorageDirectory() + "I_AM_EVERYTHING") #else getOriginStorageDirectory() #end;
 	
 	private static function getOriginStorageDirectory():String
 		return #if FOR_MOD_DEBUGER #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end #else #if (android || ios) lime.system.System.applicationStorageDirectory #else Sys.getCwd() #end #end;
