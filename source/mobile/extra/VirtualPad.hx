@@ -44,7 +44,7 @@ class VirtualPad extends MobileInputManager
 	public var buttonRight:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_RIGHT]);
 	public var buttonExtra:TouchButton = new TouchButton(0, 0, [MobileInputID.EXTRA_1]);
 
-	public static var instance:VirtualPad;
+	public var instance:MobileInputManager;
 	public static var curStatus:String = "NONE";
 
 	public function new(Status:String, extraButton:Bool = false)
