@@ -789,7 +789,7 @@ class CoolUtil
 		var files:Array<String> = [];
 		originPath = Path.addTrailingSlash(originPath);
 
-		var errorMessage:Array<String> = [];
+		var errorMessages:Array<String> = [];
 		function traverse(currentPath:String) {
 			if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
 				final sb = FileSystem.readDirectory(currentPath);
