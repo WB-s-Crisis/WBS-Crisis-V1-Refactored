@@ -806,7 +806,7 @@ class CoolUtil
 					}
 				}
 				else if(stayEmptyDirectory) {
-					files.push(currentPath);
+					files.push(reservePath ? currentPath : currentPath.substr(originPath.length));
 				}
 			}
 		}
