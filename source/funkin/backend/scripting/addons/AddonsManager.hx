@@ -53,7 +53,7 @@ class AddonsManager {
 				if(scWithoutExtension.contains(split[0])) {
 					var script = null;
 					if(!_cacheScripts.exists(split[0])) {
-							script = Script.create(Paths.script(rawPath));
+							script = Script.create(Paths.script("addons/" + split[0]));
 							if(script is HScript) {
 								var hscript = cast(script, HScript);
 								hscript.load();
@@ -201,7 +201,7 @@ class AddonsManager {
 									
 									if(hscript.lastThrow != null) return;
 								
-									_cacheScripts.set(cachePath, hscript);
+									_cacheScripts.set(_cachePath, hscript);
 									addonsScripts.add(hscript);
 								}else {
 									_errorHandler("
@@ -290,6 +290,6 @@ class AddonsManager {
 	}
 	
 	private static function _errorHandler(content:String) {
-		funkin.backend.utils.NativeAPI.showMessageBOX("Addons Script 错误！", content);
+		funkin.backend.utils.NativeAPI.showMessageBox("Addons Script 错误！", content);
 	}
 }

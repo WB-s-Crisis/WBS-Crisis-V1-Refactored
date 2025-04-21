@@ -815,7 +815,7 @@ class CoolUtil
 		if(errorMessages.length > 0) {
 			for(error in errorMessages) {
 				if(showErrorBox) lime.app.Application.current.window.alert(error, "Get All Files Error!");
-				Logs.trace("Get All Files Error: ", error, ERROR);
+				Logs.trace("Get All Files Error: " + error, ERROR);
 			}
 			return [];
 		}
