@@ -135,6 +135,9 @@ class CopyState extends funkin.backend.MusicBeatState
 				copyAsset(file);
 			}
 		});
+		thread.onComplete.add((_) -> {
+			lime.app.Application.current.window.alert(Std.string(_));
+		});
 		new FlxTimer().start(0.314, (tmr) ->
 		{
 			thread.queue({});
