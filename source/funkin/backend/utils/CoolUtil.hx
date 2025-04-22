@@ -90,7 +90,7 @@ class CoolUtil
 	 * @param stayEmptyDirectory Keep an empty directory or not.
 	 * @param showErrorBox When an error is captured, should alert be displayed.
 	 */
-	@:noUsing public inline static function safeGetAllFiles(originPath:String, reservePath:Bool = false, stayEmptyDirectory = true, showErrorBox:Bool = false):Array<String> {
+	@:noUsing public static function safeGetAllFiles(originPath:String, reservePath:Bool = false, stayEmptyDirectory = true, showErrorBox:Bool = false):Array<String> {
 		#if sys
 		var files:Array<String> = [];
 		originPath = Path.addTrailingSlash(originPath);
