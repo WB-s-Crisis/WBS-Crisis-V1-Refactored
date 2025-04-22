@@ -30,8 +30,7 @@ import flixel.util.FlxTimer;
 import openfl.utils.ByteArray;
 import haxe.io.Path;
 import funkin.backend.utils.NativeAPI;
-import flixel.ui.FlxBar;
-import flixel.ui.FlxBar.FlxBarFillDirection;
+import funkin.extra.PsychBar;
 import lime.system.ThreadPool;
 
 #if sys
@@ -56,7 +55,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static var maxLoopTimes:Int = 0;
 
 	public var loadingImage:FlxSprite;
-	public var loadingBar:FlxBar;
+	public var loadingBar:PsychBar;
 	public var loadedText:FlxText;
 	public var thread:ThreadPool;
 
@@ -87,18 +86,21 @@ class CopyState extends funkin.backend.MusicBeatState
 		loadingImage.screenCenter();
 		add(loadingImage);
 
-		loadingBar = new FlxBar(0, FlxG.height - 26, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width, 26);
-		loadingBar.setRange(0, maxLoopTimes);
+		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> loopTimes, 0, maxLoopTimes);
+		loadingBar.setColors(0xffff16d2, 0xff004d3d);
 		add(loadingBar);
 
-		loadedText = new FlxText(loadingBar.x, loadingBar.y + 4, FlxG.width, '', 16);
-		loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER);
+		loadedText = new FlxText(0, loadingBar.y, FlxG.width, '', 16);
+		loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
+		loadedText.y -= loadedText.height;
 		add(loadedText);
 
 		thread = new ThreadPool(0, CoolUtil.getCPUThreadsCount());
 		thread.doWork.add(function(_) {
 			for(file in vmFiles) {
+				updateLoadedText('($loopTimes/$maxLoopTimes) Deleting Additional file...["$file"]', FlxColor.RED);
 				loopTimes++;
+
 				deleteExistFile(file);
 			}
 		});
@@ -106,6 +108,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		{
 			for (file in locatedFiles)
 			{
+				updateLoadedText('($loopTimes/$maxLoopTimes) Copying file...["$file"]');
 				loopTimes++;
 				copyAsset(file);
 			}
@@ -133,6 +136,8 @@ class CopyState extends funkin.backend.MusicBeatState
 					File.saveContent(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
 				}
 				
+				updateLoadedText("Completed!", FlxColor.YELLOW);
+				
 				FlxG.sound.play(Paths.sound('menu/confirm')).onComplete = () ->
 				{
 					directoriesToIgnore = [];
@@ -144,13 +149,6 @@ class CopyState extends funkin.backend.MusicBeatState
 		
 				canUpdate = false;
 			}
-
-			if (loopTimes >= maxLoopTimes)
-				loadedText.text = "Completed!";
-			else
-				loadedText.text = '$loopTimes/$maxLoopTimes';
-
-			loadingBar.percent = Math.min((loopTimes / maxLoopTimes) * 100, 100);
 		}
 		super.update(elapsed);
 	}
@@ -235,6 +233,20 @@ class CopyState extends funkin.backend.MusicBeatState
 			failedFilesStack.push('${getFile(file)} (${e.stack})');
 		}
 	}
+	
+	private var prevColor:FlxColor = FlxColor.WHITE;
+	private function updateLoadedText(content:String, color:FlxColor = FlxColor.WHITE) {
+		try {
+			if(prevColor != color) {
+				loadedText.color = color;
+				prevColor = color;
+			}
+			loadedText.text = content;
+			loadedText.y = loadingBar.y - loadedText.height;
+		} catch(e:haxe.Exception) {
+			lime.app.Application.current.window.alert(e.message + "\n" + e.stack);
+		}
+	}
 
 	public static function getFileBytes(file:String):ByteArray
 	{
@@ -302,5 +314,9 @@ class CopyState extends funkin.backend.MusicBeatState
 
 		return (maxLoopTimes <= 0);
 	}
+}
+
+class UnusedBar extends FlxBar {
+	public override function setRange(min:Float, max:Float)
 }
 #end
