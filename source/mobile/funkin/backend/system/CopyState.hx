@@ -49,6 +49,11 @@ class CopyState extends funkin.backend.MusicBeatState
 	private static final textFilesExtensions:Array<String> = ['ini', 'txt', 'xml', 'hxs', 'hx', 'lua', 'json', 'frag', 'vert'];
 	public static final IGNORE_FOLDER_FILE_NAME:String = "CopyState-Ignore.txt";
 	private static var directoriesToIgnore:Array<String> = [];
+	private static var curContent:Unused = {
+		curLoop: -1,
+		curText: "",
+		curColor: 0
+	};
 	public static var locatedFiles:Array<String> = [];
 	//删除额外的文件以及目录
 	public static var vmFiles:Array<String> = [];
@@ -86,7 +91,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		loadingImage.screenCenter();
 		add(loadingImage);
 
-		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> loopTimes / maxLoopTimes, 0, 1);
+		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> lerp(loadingBar.percent, loopTimes / maxLoopTimes, Math.exp(-FlxG.elapsed * 75)), 0, 1);
 		loadingBar.setColors(0xffff16d2, 0xff004d3d);
 		add(loadingBar);
 
@@ -99,6 +104,17 @@ class CopyState extends funkin.backend.MusicBeatState
 		thread.doWork.add(function(_) {
 			for(file in vmFiles) {
 				//updateLoadedText('($loopTimes/$maxLoopTimes) Deleting Additional file...["$file"]', FlxColor.RED);
+				//防止冲突
+				Sys.sleep(0.01);
+
+				for(field in Reflect.fields(curContent)) {
+					switch(field) {
+						case "curLoop": Reflect.setProperty(curContent, field, loopTimes);
+						case "curText": Reflect.setProperty(curContent, field, 'Deleting Additional file...["$file"]');
+						case "curColor": Reflect.setProperty(curContent, field, 0xFFFF0000);
+						default:
+					}
+				}
 				loopTimes++;
 
 				deleteExistFile(file);
@@ -109,6 +125,14 @@ class CopyState extends funkin.backend.MusicBeatState
 			for (file in locatedFiles)
 			{
 				//updateLoadedText('($loopTimes/$maxLoopTimes) Copying file...["$file"]');
+				for(field in Reflect.fields(curContent)) {
+					switch(field) {
+						case "curLoop": Reflect.setProperty(curContent, field, loopTimes);
+						case "curText": Reflect.setProperty(curContent, field, 'Copying file...["$file"]');
+						case "curColor": Reflect.setProperty(curContent, field, 0xFFFFFFFF);
+						default:
+					}
+				}
 				loopTimes++;
 				copyAsset(file);
 			}
@@ -125,7 +149,9 @@ class CopyState extends funkin.backend.MusicBeatState
 	{
 		if (shouldCopy)
 		{
-			if (loopTimes >= maxLoopTimes && canUpdate)
+			if(canUpdate && executableContent()) updateLoadedText('[${curContent.curLoop}/$maxLoopTime]...${curContent.curText}', curContent.curColor);
+
+			if (loopTimes >= maxLoopTimes && loadingBar.percent > 99 && canUpdate)
 			{
 				if (failedFiles.length > 0)
 				{
@@ -144,9 +170,11 @@ class CopyState extends funkin.backend.MusicBeatState
 					locatedFiles = [];
 					vmFiles = [];
 					maxLoopTimes = 0;
+					curContent = {};
+
 					FlxG.resetGame();
 				};
-		
+
 				canUpdate = false;
 			}
 		}
@@ -314,5 +342,14 @@ class CopyState extends funkin.backend.MusicBeatState
 
 		return (maxLoopTimes <= 0);
 	}
+
+	private static inline function executableContent():Bool
+		return curContent.curLoop > -1 && curContent.curText != "" && curContent.curColor != 0;
+}
+
+typedef Unused = {
+	var curLoop:Int;
+	var curText:String;
+	var curColor:Int;
 }
 #end

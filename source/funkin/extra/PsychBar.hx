@@ -27,11 +27,11 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 	public function new(x:Float, y:Float, ?image:String, width:Int = 1, height:Int = 1, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1, offsetX:Float = 0, offsetY:Float = 0, offsetWidth:Int = 0, offsetHeight:Int = 0)
 	{
 		super(x, y);
-		
+
 		this.valueFunction = valueFunction;
 		setBounds(boundX, boundY);
 		barOffset.set(offsetX, offsetY);
-		
+
 		final condition = image != null && Assets.exists(image);
 		if(condition) {
 			bg = new FlxSkewedSprite();
@@ -76,7 +76,12 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 		else percent = 0;
 		super.update(elapsed);
 	}
-	
+
+	override function destroy() {
+		super.destroy();
+		if(barOffset != null) barOffset.put();
+	}
+
 	public function setBounds(min:Float, max:Float)
 	{
 		bounds.min = min;
