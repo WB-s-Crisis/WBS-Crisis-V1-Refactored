@@ -91,12 +91,13 @@ class CopyState extends funkin.backend.MusicBeatState
 		loadingImage.screenCenter();
 		add(loadingImage);
 
-		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> lerp(loadingBar.percent, loopTimes / maxLoopTimes, Math.exp(-FlxG.elapsed * 75)), 0, 1);
+		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> lerp(loadingBar.percent / 100, loopTimes / maxLoopTimes, Math.exp(-FlxG.elapsed * 75)), 0, 1);
 		loadingBar.setColors(0xffff16d2, 0xff004d3d);
 		add(loadingBar);
 
 		loadedText = new FlxText(0, loadingBar.y, FlxG.width, '', 16);
 		loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
+		loadedText.setBorderStyle(OUTLINE, 0xFF4D0000, 1.25);
 		loadedText.y -= loadedText.height;
 		add(loadedText);
 
