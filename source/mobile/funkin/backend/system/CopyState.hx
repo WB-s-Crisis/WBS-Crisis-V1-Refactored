@@ -27,6 +27,7 @@ import lime.utils.Assets as LimeAssets;
 import openfl.utils.Assets as OpenFLAssets;
 import flixel.text.FlxText;
 import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
 import openfl.utils.ByteArray;
 import haxe.io.Path;
 import funkin.backend.utils.NativeAPI;
@@ -58,6 +59,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	//删除额外的文件以及目录
 	public static var vmFiles:Array<String> = [];
 	public static var maxLoopTimes:Int = 0;
+	public static var oneshot:Bool = false;
 
 	public var loadingImage:FlxSprite;
 	public var loadingBar:PsychBar;
@@ -69,6 +71,10 @@ class CopyState extends funkin.backend.MusicBeatState
 	var shouldCopy:Bool = false;
 	var canUpdate:Bool = true;
 	var loopTimes:Int = 0;
+
+	public function new() {
+		super(false);
+	}
 
 	override function create()
 	{
@@ -102,42 +108,36 @@ class CopyState extends funkin.backend.MusicBeatState
 		add(loadedText);
 
 		thread = new ThreadPool(0, CoolUtil.getCPUThreadsCount());
+
+		thread.onProgress.add(function(bean) {
+			for(field in Reflect.fields(curContent)) {
+				switch(field) {
+					case "curLoop": Reflect.setProperty(curContent, field, bean.l);
+					case "curText": Reflect.setProperty(curContent, field, bean.t);
+					case "curColor": Reflect.setProperty(curContent, field, bean.c);
+					default:
+				}
+			}
+		});
+
+		thread.doWork.add(function(poop)
+		{
+			for (file in locatedFiles)
+			{
+				thread.sendProgress({l: loopTimes, t: 'Copying file...["$file"]', c: 0xFFFFFFFF});
+				loopTimes++;
+				copyAsset(file);
+			}
+		});
 		thread.doWork.add(function(_) {
 			for(file in vmFiles) {
-				//updateLoadedText('($loopTimes/$maxLoopTimes) Deleting Additional file...["$file"]', FlxColor.RED);
-				for(field in Reflect.fields(curContent)) {
-					switch(field) {
-						case "curLoop": Reflect.setProperty(curContent, field, loopTimes);
-						case "curText": Reflect.setProperty(curContent, field, 'Deleting Additional file...["$file"]');
-						case "curColor": Reflect.setProperty(curContent, field, 0xFFFF6D6D);
-						default:
-					}
-				}
+				thread.sendProgress({l: loopTimes, t: 'Deleting Additional file...["$file"]', c: 0xFFFF6D6D});
 				loopTimes++;
 
 				deleteExistFile(file);
 			}
 		});
-		thread.doWork.add(function(poop)
-		{
-			for (file in locatedFiles)
-			{
-				//updateLoadedText('($loopTimes/$maxLoopTimes) Copying file...["$file"]');
-				for(field in Reflect.fields(curContent)) {
-					switch(field) {
-						case "curLoop": Reflect.setProperty(curContent, field, loopTimes);
-						case "curText": Reflect.setProperty(curContent, field, 'Copying file...["$file"]');
-						case "curColor": Reflect.setProperty(curContent, field, 0xFFFFFFFF);
-						default:
-					}
-				}
-				loopTimes++;
-				copyAsset(file);
-			}
-		});
-		thread.onComplete.add((_) -> {
-			lime.app.Application.current.window.alert(Std.string(_));
-		});
+
 		new FlxTimer().start(0.314, (tmr) ->
 		{
 			thread.queue({});
@@ -162,10 +162,11 @@ class CopyState extends funkin.backend.MusicBeatState
 						FileSystem.createDirectory(folder);
 					File.saveContent(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '-CopyState' + '.txt', failedFilesStack.join('\n'));
 				}
-				
+
 				updateLoadedText("Completed!", FlxColor.YELLOW);
-				
-				FlxG.sound.play(Paths.sound('menu/confirm')).onComplete = () ->
+
+				final sound = FlxG.sound.play(Paths.sound('menu/confirm'));
+				sound.onComplete = () ->
 				{
 					directoriesToIgnore = [];
 					locatedFiles = [];
@@ -179,9 +180,11 @@ class CopyState extends funkin.backend.MusicBeatState
 							default:
 						}
 					}
+					oneshot = true;
 
 					FlxG.resetGame();
 				};
+				FlxTween.tween(FlxG.camera, {alpha: 0}, sound.length / 1000 - 314, {startDelay: 0.314});
 
 				canUpdate = false;
 			}
