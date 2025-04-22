@@ -34,7 +34,7 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 		
 		final condition = image != null && Assets.exists(image);
 		if(condition) {
-			bg = new FlxSprite().loadGraphic(image);
+			bg = new FlxSkewedSprite().loadGraphic(image);
 			bg.antialiasing = Options.antialiasing;
 			barWidth = Std.int(bg.width - offsetWidth);
 			barHeight = Std.int(bg.height - offsetHeight);
@@ -43,17 +43,17 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 			barHeight = Std.int(height - offsetHeight);
 		}
 
-		leftBar = new FlxSprite().makeGraphic(Std.int(barWidth), Std.int(barHeight), FlxColor.WHITE);
+		leftBar = new FlxSkewedSprite().makeGraphic(Std.int(barWidth), Std.int(barHeight), FlxColor.WHITE);
 		//leftBar.color = FlxColor.WHITE;
 		leftBar.antialiasing = antialiasing = Options.antialiasing;
 
-		rightBar = new FlxSprite().makeGraphic(Std.int(barWidth), Std.int(barHeight), FlxColor.WHITE);
+		rightBar = new FlxSkewedSprite().makeGraphic(Std.int(barWidth), Std.int(barHeight), FlxColor.WHITE);
 		rightBar.color = FlxColor.BLACK;
 		rightBar.antialiasing = Options.antialiasing;
 
 		add(leftBar);
 		add(rightBar);
-		if(contition) add(bg);
+		if(condition) add(bg);
 		regenerateClips();
 	}
 
