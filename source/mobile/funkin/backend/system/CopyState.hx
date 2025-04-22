@@ -149,7 +149,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	{
 		if (shouldCopy)
 		{
-			if(canUpdate && executableContent()) updateLoadedText('[${curContent.curLoop}/$maxLoopTime]...${curContent.curText}', curContent.curColor);
+			if(canUpdate && executableContent()) updateLoadedText('[${curContent.curLoop}/$maxLoopTimes]...${curContent.curText}', curContent.curColor);
 
 			if (loopTimes >= maxLoopTimes && loadingBar.percent > 99 && canUpdate)
 			{
@@ -170,7 +170,14 @@ class CopyState extends funkin.backend.MusicBeatState
 					locatedFiles = [];
 					vmFiles = [];
 					maxLoopTimes = 0;
-					curContent = {};
+					for(field in Reflect.fields(curContent)) {
+						switch(field) {
+							case "curLoop": Reflect.setProperty(curContent, field, -1);
+							case "curText": Reflect.setProperty(curContent, field, "");
+							case "curColor": Reflect.setProperty(curContent, field, 0);
+							default:
+						}
+					}
 
 					FlxG.resetGame();
 				};
