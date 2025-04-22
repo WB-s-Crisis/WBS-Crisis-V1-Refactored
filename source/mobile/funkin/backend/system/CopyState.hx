@@ -86,7 +86,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		loadingImage.screenCenter();
 		add(loadingImage);
 
-		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> loopTimes, 0, maxLoopTimes);
+		loadingBar = new PsychBar(0, FlxG.height - 26, FlxG.width, 26, () -> loopTimes / maxLoopTimes, 0, 1);
 		loadingBar.setColors(0xffff16d2, 0xff004d3d);
 		add(loadingBar);
 
@@ -98,7 +98,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		thread = new ThreadPool(0, CoolUtil.getCPUThreadsCount());
 		thread.doWork.add(function(_) {
 			for(file in vmFiles) {
-				updateLoadedText('($loopTimes/$maxLoopTimes) Deleting Additional file...["$file"]', FlxColor.RED);
+				//updateLoadedText('($loopTimes/$maxLoopTimes) Deleting Additional file...["$file"]', FlxColor.RED);
 				loopTimes++;
 
 				deleteExistFile(file);
@@ -108,7 +108,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		{
 			for (file in locatedFiles)
 			{
-				updateLoadedText('($loopTimes/$maxLoopTimes) Copying file...["$file"]');
+				//updateLoadedText('($loopTimes/$maxLoopTimes) Copying file...["$file"]');
 				loopTimes++;
 				copyAsset(file);
 			}
