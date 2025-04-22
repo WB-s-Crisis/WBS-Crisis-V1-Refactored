@@ -831,56 +831,6 @@ class CoolUtil
 		return file.file;
 	}
 
-<<<<<<< HEAD
-=======
-	/**
-	 * Safely retrieve all files in the specified directory and subdirectories.
-	 * @param originPath Specify directory
-	 * @param reservePath Add the path of the specified directory to the output file or not.
-	 * @param stayEmptyDirectory Keep an empty directory or not.
-	 * @param showErrorBox When an error is captured, should alert be displayed.
-	 */
-	@:noUsing public inline static function safeGetAllFiles(originPath:String, reservePath:Bool = false, stayEmptyDirectory = true, showErrorBox:Bool = false):Array<String> {
-		#if sys
-		var files:Array<String> = [];
-		originPath = Path.addTrailingSlash(originPath);
-
-		var errorMessages:Array<String> = [];
-		function traverse(currentPath:String) {
-			try {
-				if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
-					final sb = FileSystem.readDirectory(currentPath);
-					if(sb.length > 0) for (item in sb) {
-						var fullPath = Path.addTrailingSlash(currentPath) + item;
-						if (FileSystem.isDirectory(fullPath)) {
-							traverse(fullPath);
-						} else {
-							files.push(reservePath ? fullPath : fullPath.substr(originPath.length));
-						}
-					}
-					else if(stayEmptyDirectory) {
-						files.push(reservePath ? currentPath : currentPath.substr(originPath.length));
-					}
-				}
-			} catch(e:haxe.Exception) {
-				errorMessages.push('Reading This Directory "$currentPath" Failed! \n [${e.message}\n${Std.string(e.stack)}]');
-			}
-		}
-
-		traverse(originPath);
-		if(errorMessages.length > 0) {
-			for(error in errorMessages) {
-				if(showErrorBox) lime.app.Application.current.window.alert(error, "Get All Files Error!");
-				Logs.trace(error, ERROR);
-			}
-			return [];
-		}
-		return files;
-		#end
-		return [];
-	}
-
->>>>>>> 9e1b1e3 (你好)
 	/**
 	 * Converts a string of "1..3,5,7..9,8..5" into an array of numbers like [1,2,3,5,7,8,9,8,7,6,5]
 	 * @param input String to parse
