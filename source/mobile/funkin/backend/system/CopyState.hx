@@ -315,8 +315,4 @@ class CopyState extends funkin.backend.MusicBeatState
 		return (maxLoopTimes <= 0);
 	}
 }
-
-class UnusedBar extends FlxBar {
-	public override function setRange(min:Float, max:Float)
-}
 #end
