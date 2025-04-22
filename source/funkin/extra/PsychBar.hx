@@ -1,4 +1,4 @@
-package objects;
+package funkin.extra;
 
 import flixel.math.FlxRect;
 import flixel.addons.effects.FlxSkewedSprite;
