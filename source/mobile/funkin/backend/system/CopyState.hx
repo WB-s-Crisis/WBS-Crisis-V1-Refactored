@@ -96,7 +96,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		add(loadingBar);
 
 		loadedText = new FlxText(0, loadingBar.y, FlxG.width, '', 16);
-		loadedText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT);
+		loadedText.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT);
 		loadedText.setBorderStyle(OUTLINE, 0xFF4D0000, 1.25);
 		loadedText.y -= loadedText.height;
 		add(loadedText);
@@ -105,14 +105,11 @@ class CopyState extends funkin.backend.MusicBeatState
 		thread.doWork.add(function(_) {
 			for(file in vmFiles) {
 				//updateLoadedText('($loopTimes/$maxLoopTimes) Deleting Additional file...["$file"]', FlxColor.RED);
-				//防止冲突
-				Sys.sleep(0.01);
-
 				for(field in Reflect.fields(curContent)) {
 					switch(field) {
 						case "curLoop": Reflect.setProperty(curContent, field, loopTimes);
 						case "curText": Reflect.setProperty(curContent, field, 'Deleting Additional file...["$file"]');
-						case "curColor": Reflect.setProperty(curContent, field, 0xFFFF0000);
+						case "curColor": Reflect.setProperty(curContent, field, 0xFFFF6D6D);
 						default:
 					}
 				}
@@ -138,7 +135,7 @@ class CopyState extends funkin.backend.MusicBeatState
 				copyAsset(file);
 			}
 		});
-		new FlxTimer().start(0.5, (tmr) ->
+		new FlxTimer().start(0.314, (tmr) ->
 		{
 			thread.queue({});
 		});
@@ -202,13 +199,11 @@ class CopyState extends funkin.backend.MusicBeatState
 					createContentFromInternal(file);
 				else
 				{
-					var path:String = '';
+					var path:String = file;
 					#if android
 					if (file.startsWith('mods/'))
 						path = StorageUtil.getExternalStorageDirectory() + file;
-					else
 					#end
-						path = file;
 
 					File.saveBytes(path, getFileBytes(getFile(file)));
 				}
@@ -280,7 +275,8 @@ class CopyState extends funkin.backend.MusicBeatState
 			loadedText.text = content;
 			loadedText.y = loadingBar.y - loadedText.height;
 		} catch(e:haxe.Exception) {
-			lime.app.Application.current.window.alert(e.message + "\n" + e.stack);
+			failedFiles.push('Update Text Error (${e.message})');
+			failedFilesStack.push('Update Text Error (${e.stack})');
 		}
 	}
 
