@@ -1,4 +1,4 @@
-package mobile.extra:
+package mobile.extra;
 
 #if TOUCH_CONTROLS
 import flixel.util.FlxSignal.FlxTypedSignal;
