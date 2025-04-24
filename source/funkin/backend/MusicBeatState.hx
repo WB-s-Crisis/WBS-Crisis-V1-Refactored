@@ -16,7 +16,7 @@ import funkin.options.PlayerSettings;
 import mobile.funkin.backend.utils.MobileData;
 import mobile.extra.Hitbox;
 import mobile.extra.VirtualPad;
-import mobile.extra.GamePad:
+import mobile.extra.GamePad;
 import mobile.extra.TouchPad;
 import flixel.FlxCamera;
 import flixel.util.FlxDestroyUtil;
