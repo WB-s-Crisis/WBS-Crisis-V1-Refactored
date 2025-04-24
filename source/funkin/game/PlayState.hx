@@ -807,7 +807,7 @@ class PlayState extends MusicBeatState
 
 		final leftColor:FlxColor = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
 		final rightColor:FlxColor = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
-		healthBar = new PsychBar(0, FlxG.height * 0.9, Paths.image(healthBarImage), null, null, () -> health, 0, maxHealth, healthBarOffset.x, healthBarOffset.y, healthBarOffset.width, healthBarOffset.height).setColors(leftColor, rightColor);
+		healthBar = new PsychBar(0, FlxG.height * 0.9, Paths.image(healthBarImage), null, null, () -> health, 0, maxHealth, healthBarOffset.x, healthBarOffset.y, Std.int(healthBarOffset.width), Std.int(healthBarOffset.height)).setColors(leftColor, rightColor);
 		healthBar.leftToRight = false;
 		healthBar.screenCenter(X);
 		healthBar.scrollFactor.set();
