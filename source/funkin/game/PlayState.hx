@@ -21,7 +21,7 @@ import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
-import flixel.ui.FlxBar;
+import extra.PsychBar:
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
@@ -305,13 +305,17 @@ class PlayState extends MusicBeatState
 	 */
 	public var comboBreaks:Bool = !Options.ghostTapping;
 	/**
-	 * Health bar background.
+	 * Health bar. (Contains background)
 	 */
-	public var healthBarBG:FlxSprite;
+	public var healthBar:PsychBar;
 	/**
-	 * Health bar.
+	 * Health Bar 指定的图片路径。
 	 */
-	public var healthBar:FlxBar;
+	public var healthBarImage:String = "game/healthBar";
+	/**
+	 * 控制Health Bar内的偏移。
+	 */
+	public var healthBarOffset:FlxRect = new FlxRect(4, 4, 4, 4);
 
 	/**
 	 * Whenever the music has been generated.
@@ -595,8 +599,8 @@ class PlayState extends MusicBeatState
 	private inline function get_maxHealth()
 		return this.maxHealth;
 	private function set_maxHealth(v:Float) {
-		if (healthBar != null && healthBar.max == this.maxHealth) {
-			healthBar.setRange(healthBar.min, v);
+		if (healthBar != null && healthBar.bounds.max == this.maxHealth) {
+			healthBar.setBounds(healthBar.bounds.min, v);
 		}
 		return this.maxHealth = v;
 	}
@@ -800,17 +804,12 @@ class PlayState extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadAnimatedGraphic(Paths.image('game/healthBar'));
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set();
-		add(healthBarBG);
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, maxHealth);
+		final leftColor:FlxColor = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+		final rightColor:FlxColor = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+		healthBar = new PsychBar(0, FlxG.height * 0.9, Paths.image(healthBarImage), null, null, () -> health, 0, healthMax, healthBarOffset.x, healthBarOffset.y, healthBarOffset.width, healthBarOffset.height).setColors(leftColor, rightColor);
+		healthBar.leftToRight = false:
+		healthBar.screenCenter(X);
 		healthBar.scrollFactor.set();
-		var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
-		var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
-		healthBar.createFilledBar(leftColor, rightColor);
 		add(healthBar);
 
 		health = maxHealth / 2;
@@ -822,9 +821,9 @@ class PlayState extends MusicBeatState
 			add(icon);
 		}
 
-		scoreTxt = new FunkinText(healthBarBG.x + 50, healthBarBG.y + 30, Std.int(healthBarBG.width - 100), "Score:0", 16);
-		missesTxt = new FunkinText(healthBarBG.x + 50, healthBarBG.y + 30, Std.int(healthBarBG.width - 100), "Misses:0", 16);
-		accuracyTxt = new FunkinText(healthBarBG.x + 50, healthBarBG.y + 30, Std.int(healthBarBG.width - 100), "Accuracy:-% (N/A)", 16);
+		scoreTxt = new FunkinText(healthBar.x + 50, healthBar.y + 30, Std.int(healthBar.width - 100), "Score:0", 16);
+		missesTxt = new FunkinText(healthBar.x + 50, healthBar.y + 30, Std.int(healthBar.width - 100), "Misses:0", 16);
+		accuracyTxt = new FunkinText(healthBar.x + 50, healthBar.y + 30, Std.int(healthBar.width - 100), "Accuracy:-% (N/A)", 16);
 		accuracyTxt.addFormat(accFormat, 0, 1);
 
 		for(text in [scoreTxt, missesTxt, accuracyTxt]) {
@@ -836,7 +835,7 @@ class PlayState extends MusicBeatState
 		accuracyTxt.alignment = LEFT;
 		updateRatingStuff();
 
-		for(e in [healthBar, healthBarBG, iconP1, iconP2, scoreTxt, missesTxt, accuracyTxt])
+		for(e in [healthBar, iconP1, iconP2, scoreTxt, missesTxt, accuracyTxt])
 			e.cameras = [camHUD];
 		#end
 
@@ -880,7 +879,7 @@ class PlayState extends MusicBeatState
 		updateDiscordPresence();
 
 		// Make icons appear in the correct spot during cutscenes
-		healthBar.update(0);
+		healthBar.regenerateClips();
 		updateIconPositions();
 
 		__updateNote_event = EventManager.get(NoteUpdateEvent);
@@ -1290,10 +1289,8 @@ class PlayState extends MusicBeatState
 	function updateIconPositions() {
 		var iconOffset:Int = 26;
 
-		var center:Float = healthBar.x + healthBar.width * FlxMath.remapToRange(healthBar.percent, 0, 100, 1, 0);
-
-		iconP1.x = center - iconOffset;
-		iconP2.x = center - (iconP2.width - iconOffset);
+		iconP1.x = healthBar.barCenter - iconOffset;
+		iconP2.x = healthBar.barCenter - (iconP2.width - iconOffset);
 
 		health = FlxMath.bound(health, 0, maxHealth);
 

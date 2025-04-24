@@ -4,7 +4,7 @@
 	<app
 		title="Friday Night Funkin' - WB's Crisis" main="funkin.backend.system.Main"
 		file="WBs Crisis" packageName="com.myZYANG.WBsCrisis"
-		package="com.myZYANG.WBsCrisis"
+		package="com.msZYANG.WBsCrisis"
 		version="1.0" company="WBsCrisis Team" />
 
 	<!--
