@@ -94,8 +94,8 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 			leftBar.color = left;
 		if (right != null)
 			rightBar.color = right;
-		
-		return this:
+
+		return this;
 	}
 
 	public function updateBar()
