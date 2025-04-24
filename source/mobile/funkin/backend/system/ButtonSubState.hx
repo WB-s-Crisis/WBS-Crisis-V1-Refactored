@@ -8,6 +8,7 @@ import flixel.group.FlxGroup;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 import funkin.backend.system.Main;
+import funkin.options.OptionsScreen;
 import mobile.extra.VirtualPad;
 import mobile.extra.Hitbox;
 import flixel.FlxSubState;
@@ -305,6 +306,8 @@ class ButtonSubState extends FlxSubState {
 		FlxTween.tween(camButton, {alpha: 0}, 0.35, {onComplete: (_) -> {
 			FlxG.state.persistentUpdate = true;
 			FlxG.state.persistentDraw = true;
+			
+			if(!OptionsScreen.canSelected) OptionsScreen.canSelected = true;
 			close();
 		}});
 		FlxTween.tween(Main.instance.framerateSprite, {alpha: 1}, 0.35);

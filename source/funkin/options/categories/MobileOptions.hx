@@ -17,8 +17,6 @@ import sys.io.File;
 #end
 
 class MobileOptions extends OptionsScreen {
-	var canEnter:Bool = true;
-
 	public override function new() {
 		dpadMode = 'LEFT_FULL';
 		actionMode = 'A_B';
@@ -83,6 +81,7 @@ class MobileOptions extends OptionsScreen {
 	
 	#if TOUCH_CONTROLS
 	function enterAndEditButtons():Void {
+		OptionsScreen.canSelected = false;
 		new FlxTimer().start(0.5, (tmr) -> {
 			FlxG.state.openSubState(new ButtonSubState());
 		});

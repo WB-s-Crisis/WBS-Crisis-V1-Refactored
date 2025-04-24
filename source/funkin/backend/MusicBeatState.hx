@@ -16,7 +16,7 @@ import funkin.options.PlayerSettings;
 import mobile.funkin.backend.utils.MobileData;
 import mobile.extra.Hitbox;
 import mobile.extra.VirtualPad;
-import mobile.funkin.backend.system.input.MobileInputManager;
+import mobile.extra.GamePad:
 import mobile.extra.TouchPad;
 import flixel.FlxCamera;
 import flixel.util.FlxDestroyUtil;
@@ -119,7 +119,7 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 		
 	#if TOUCH_CONTROLS
 	public var touchPad:TouchPad;
-	public var gamePad:MobileInputManager;
+	public var gamePad:GamePad;
 	public var hboxCam:FlxCamera;
 	public var tpadCam:FlxCamera;
 

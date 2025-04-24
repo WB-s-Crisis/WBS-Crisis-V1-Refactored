@@ -29,7 +29,7 @@ import haxe.io.Path;
 
 /**
  * A storage class for mobile.
- * @base author Karim Akra and Homura Akemi (HomuHomu833)
+ * @baseAuthor Karim Akra and Homura Akemi (HomuHomu833)
  */
 class StorageUtil
 {

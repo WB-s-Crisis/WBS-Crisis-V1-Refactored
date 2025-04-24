@@ -33,33 +33,23 @@ import openfl.utils.Assets;
 
 /**
  * ...
- * @base author: Karim Akra and Homura Akemi (HomuHomu833)
+ * @baseAuthor: Karim Akra and Homura Akemi (HomuHomu833)
  */
 @:access(mobile.extra.TouchButton)
-class VirtualPad extends MobileInputManager
+class VirtualPad extends GamePad
 {
-	public var buttonLeft:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_LEFT]);
-	public var buttonDown:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_DOWN]);
-	public var buttonUp:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_UP]);
-	public var buttonRight:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_RIGHT]);
-	public var buttonExtra:TouchButton = new TouchButton(0, 0, [MobileInputID.EXTRA_1]);
-
-	public var instance:MobileInputManager;
-	public var onButtonDown:FlxTypedSignal<TouchButton->Void> = new FlxTypedSignal<TouchButton->Void>();
-	public var onButtonUp:FlxTypedSignal<TouchButton->Void> = new FlxTypedSignal<TouchButton->Void>();
-
 	public static var curStatus:String = "NONE";
 
-	public function new(Status:String, extraButton:Bool = false)
+	public function new(Status:String = "NONE", extraButton:Bool = false)
 	{
-		super();
+		super(extraButton);
 
 		if (Status != "NONE")
 		{
 			if (MobileData.yuanshenModes.exists(Status)) {
 				for (buttonData in MobileData.yuanshenModes.get(Status).buttons)
 				{
-					if(!extraButton && buttonData.button == "buttonExtra") continue;
+					if(!this.extraMode && buttonData.button == "buttonExtra") continue;
 					Reflect.setField(this, buttonData.button,
 						createButton(buttonData.x, buttonData.y, buttonData.graphic, getColorFromString(buttonData.color),
 							Reflect.getProperty(this, buttonData.button).IDs));
@@ -70,7 +60,7 @@ class VirtualPad extends MobileInputManager
 			}else if(Status == "CUSTOM") {
 				for (buttonData in MobileData.yuanshenModes.get("RIGHT_FULL").buttons)
 				{
-					if(!extraButton && buttonData.button == "buttonExtra") continue;
+					if(!this.extraMode && buttonData.button == "buttonExtra") continue;
 				
 					final bean:Array<Float> = Options.buttonsCustomPos[buttonNameConnectID(buttonData.button)];
 
@@ -82,7 +72,7 @@ class VirtualPad extends MobileInputManager
 			}else if(Status == "KEYBOARD" || Status == "HITBOX") {
 				for (buttonData in MobileData.yuanshenModes.get("RIGHT_FULL").buttons)
 				{
-					if(!extraButton && buttonData.button == "buttonExtra") continue;
+					if(!this.extraMode && buttonData.button == "buttonExtra") continue;
 					Reflect.setField(this, buttonData.button,
 						createButton(buttonData.x, buttonData.y, buttonData.graphic, getColorFromString(buttonData.color),
 							Reflect.getProperty(this, buttonData.button).IDs));
@@ -96,22 +86,6 @@ class VirtualPad extends MobileInputManager
 
 		scrollFactor.set();
 		updateTrackedButtons();
-
-		instance = this;
-	}
-
-	override public function destroy()
-	{
-		super.destroy();
-		onButtonUp.destroy();
-		onButtonDown.destroy();
-
-		for (fieldName in Reflect.fields(this))
-		{
-			var field = Reflect.field(this, fieldName);
-			if (Std.isOfType(field, TouchButton))
-				Reflect.setField(this, fieldName, FlxDestroyUtil.destroy(field));
-		}
 	}
 
 	private function createButton(X:Float, Y:Float, Graphic:String, ?Color:FlxColor = 0xFFFFFF, ?IDs:Array<MobileInputID>):TouchButton
@@ -188,6 +162,7 @@ class VirtualPad extends MobileInputManager
 			case "buttonUp": 2;
 			case "buttonRight": 3;
 			case "buttonExtra": 4;
+			case "buttonExtra2": 5;
 			default: -1;
 		}
 	}

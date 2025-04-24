@@ -31,7 +31,7 @@ import flixel.util.FlxSave;
 
 /**
  * ...
- * @base author: Karim Akra
+ * @baseAuthor: Karim Akra
  */
 class MobileData
 {

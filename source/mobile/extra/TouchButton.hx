@@ -33,7 +33,7 @@ import flixel.input.mouse.FlxMouseButton;
 
 /**
  * A simple button class that calls a function when clicked by the touch.
- * @base author: Karim Akra, Homura Akemi (HomuHomu833) and KralOyuncu2010X (ArkoseLabs)
+ * @baseAuthor: Karim Akra, Homura Akemi (HomuHomu833) and KralOyuncu2010X (ArkoseLabs)
  */
 class TouchButton extends TypedTouchButton<FlxSprite>
 {

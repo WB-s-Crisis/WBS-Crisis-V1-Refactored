@@ -33,9 +33,9 @@ import openfl.geom.Matrix;
  * A zone with 4 hint's (A hitbox).
  * It's really easy to customize the layout.
  *
- * @base author: Karim Akra and Homura Akemi (HomuHomu833)
+ * @baseAuthor: Karim Akra and Homura Akemi (HomuHomu833)
  */
-class Hitbox extends MobileInputManager
+class Hitbox extends GamePad
 {
 	static var hitboxPos(get, never):Bool;
 	@:noCompletion static function get_hitboxPos():Bool
@@ -44,25 +44,14 @@ class Hitbox extends MobileInputManager
 	final offsetFir:Int = (hitboxPos ? Std.int(FlxG.height / 4) * 3 : 0);
 	final offsetSec:Int = (hitboxPos ? 0 : Std.int(FlxG.height / 4));
 
-	public var buttonLeft:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_LEFT]);
-	public var buttonDown:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_DOWN]);
-	public var buttonUp:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_UP]);
-	public var buttonRight:TouchButton = new TouchButton(0, 0, [MobileInputID.NOTE_RIGHT]);
-	public var buttonExtra:TouchButton = new TouchButton(0, 0, [MobileInputID.EXTRA_1]);
-	public var buttonExtra2:TouchButton = new TouchButton(0, 0, [MobileInputID.EXTRA_2]);
-
-	public var instance:MobileInputManager;
-	public var onButtonDown:FlxTypedSignal<TouchButton->Void> = new FlxTypedSignal<TouchButton->Void>();
-	public var onButtonUp:FlxTypedSignal<TouchButton->Void> = new FlxTypedSignal<TouchButton->Void>();
-
 	var storedButtonsIDs:Map<String, Array<MobileInputID>> = new Map<String, Array<MobileInputID>>();
 
 	/**
 	 * Create the zone.
 	 */
-	public function new(?extraMode:Bool = false)
+	public function new(extraMode:Bool = false)
 	{
-		super();
+		super(extraMode);
 
 		for (button in Reflect.fields(this))
 		{
@@ -71,7 +60,7 @@ class Hitbox extends MobileInputManager
 				storedButtonsIDs.set(button, Reflect.getProperty(field, 'IDs'));
 		}
 
-		if(!extraMode) {
+		if(!this.extraMode) {
 				add(buttonLeft = createHint(0, 0, Std.int(FlxG.width / 4), FlxG.height, 0xFFC24B99));
 				add(buttonDown = createHint(FlxG.width / 4, 0, Std.int(FlxG.width / 4), FlxG.height, 0xFF00FFFF));
 				add(buttonUp = createHint(FlxG.width / 2, 0, Std.int(FlxG.width / 4), FlxG.height, 0xFF12FA05));
@@ -94,25 +83,6 @@ class Hitbox extends MobileInputManager
 		storedButtonsIDs.clear();
 		scrollFactor.set();
 		updateTrackedButtons();
-
-		instance = this;
-	}
-
-	/**
-	 * Clean up memory.
-	 */
-	override function destroy()
-	{
-		super.destroy();
-		onButtonUp.destroy();
-		onButtonDown.destroy();
-
-		for (fieldName in Reflect.fields(this))
-		{
-			var field = Reflect.field(this, fieldName);
-			if (Std.isOfType(field, TouchButton))
-				Reflect.setField(this, fieldName, FlxDestroyUtil.destroy(field));
-		}
 	}
 
 	private function createHint(X:Float, Y:Float, Width:Int, Height:Int, Color:Int = 0xFFFFFF):TouchButton

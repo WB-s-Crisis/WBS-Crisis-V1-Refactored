@@ -4,6 +4,7 @@ import funkin.options.type.OptionType;
 
 class OptionsScreen extends FlxTypedSpriteGroup<OptionType> {
 	public static var optionHeight:Float = 120;
+	public static var canSelected:Bool = true;
 
 	public var parent:OptionsTree;
 
@@ -56,7 +57,7 @@ class OptionsScreen extends FlxTypedSpriteGroup<OptionType> {
 			return;
 		}
 
-		if (members.length > 0) {
+		if (members.length > 0 && canSelected) {
 			members[curSelected].selected = true;
 			if (controls.ACCEPT || ((FlxG.mouse.justReleased && !controls.touchC) && Main.timeSinceFocus > 0.25))
 				members[curSelected].onSelect();
