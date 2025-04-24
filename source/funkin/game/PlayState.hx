@@ -19,6 +19,7 @@ import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect:
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
