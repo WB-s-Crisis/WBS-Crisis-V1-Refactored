@@ -880,7 +880,7 @@ class PlayState extends MusicBeatState
 		updateDiscordPresence();
 
 		// Make icons appear in the correct spot during cutscenes
-		healthBar.regenerateClips();
+		healthBar.percent = 100 * (health / maxHealth);
 		updateIconPositions();
 
 		__updateNote_event = EventManager.get(NoteUpdateEvent);

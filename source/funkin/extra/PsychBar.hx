@@ -1,7 +1,9 @@
 package funkin.extra;
 
 import flixel.math.FlxRect;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.addons.effects.FlxSkewedSprite;
+import flixel.util.helpers.FlxBounds;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.math.FlxMath;
@@ -15,33 +17,33 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 	public var bg:FlxSkewedSprite;
 	public var valueFunction:Void->Float = null;
 	public var percent(default, set):Float = 0;
-	public var bounds:Dynamic = {min: 0, max: 1};
+	public var bounds:FlxBounds<Float>;
 	public var leftToRight(default, set):Bool = true;
 	public var barCenter(default, null):Float = 0;
 
 	// you might need to change this if you want to use a custom bar
 	public var barWidth(default, set):Int = 1;
 	public var barHeight(default, set):Int = 1;
-	public var barOffset:FlxPoint = FlxPoint.get();
+	public var barOffset:FlxRect;
 
-	public function new(x:Float, y:Float, ?image:String, width:Int = 1, height:Int = 1, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1, offsetX:Float = 0, offsetY:Float = 0, offsetWidth:Int = 0, offsetHeight:Int = 0)
+	public function new(x:Float, y:Float, ?image:FlxGraphicAsset, width:Int = 1, height:Int = 1, valueFunction:Void->Float = null, boundX:Float = 0, boundY:Float = 1, offsetX:Float = 0, offsetY:Float = 0, offsetWidth:Int = 0, offsetHeight:Int = 0)
 	{
 		super(x, y);
 
 		this.valueFunction = valueFunction;
 		setBounds(boundX, boundY);
-		barOffset.set(offsetX, offsetY);
+		barOffset = new FlxRect(offsetX, offsetY, offsetWidth, offsetHeight);
 
 		final condition = image != null && Assets.exists(image);
 		if(condition) {
 			bg = new FlxSkewedSprite();
 			bg.loadGraphic(image);
 			bg.antialiasing = Options.antialiasing;
-			barWidth = Std.int(bg.width - offsetWidth);
-			barHeight = Std.int(bg.height - offsetHeight);
+			barWidth = Std.int(bg.width);
+			barHeight = Std.int(bg.height);
 		}else {
-			barWidth = Std.int(width - offsetWidth);
-			barHeight = Std.int(height - offsetHeight);
+			barWidth = Std.int(width);
+			barHeight = Std.int(height);
 		}
 
 		leftBar = new FlxSkewedSprite();
@@ -80,12 +82,15 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 	override function destroy() {
 		super.destroy();
 		if(barOffset != null) barOffset.put();
+		if(bounds != null) bounds.active = false;
 	}
 
-	public function setBounds(min:Float, max:Float)
+	public function setBounds(min:Float, max:Float):FlxBounds<Float>
 	{
-		bounds.min = min;
-		bounds.max = max;
+		if(bounds == null) bounds = new FlxBounds(min, max);
+		else bounds.set(min, max);
+
+		return bounds;
 	}
 
 	public function setColors(left:FlxColor = null, right:FlxColor = null)
@@ -106,16 +111,16 @@ class PsychBar extends FlxTypedSpriteGroup<FlxSkewedSprite>
 		rightBar.setPosition(this.x, this.y);
 
 		var leftSize:Float = 0;
-		if(leftToRight) leftSize = FlxMath.lerp(0, barWidth, percent / 100);
-		else leftSize = FlxMath.lerp(0, barWidth, 1 - percent / 100);
+		if(leftToRight) leftSize = FlxMath.lerp(0, barWidth - barOffset.width, percent / 100);
+		else leftSize = FlxMath.lerp(0, barWidth - barOffset.width, 1 - percent / 100);
 
-		leftBar.clipRect.width = leftSize;
-		leftBar.clipRect.height = barHeight;
+		leftBar.clipRect.width = leftSize - barOffset.width;
+		leftBar.clipRect.height = barHeight - barOffset.height;
 		leftBar.clipRect.x = barOffset.x;
 		leftBar.clipRect.y = barOffset.y;
 
 		rightBar.clipRect.width = barWidth - leftSize;
-		rightBar.clipRect.height = barHeight;
+		rightBar.clipRect.height = barHeight - barOffset.height;
 		rightBar.clipRect.x = barOffset.x + leftSize;
 		rightBar.clipRect.y = barOffset.y;
 
