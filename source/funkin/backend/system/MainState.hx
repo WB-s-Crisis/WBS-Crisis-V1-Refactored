@@ -29,7 +29,7 @@ class MainState extends FlxState {
 		{
 			Main.loadGameSettings();
 			#if mobile
-			switchUrlGit():
+			switchUrlGit();
 			if(!initiatedGIT || !FileSystem.exists(".version")) if(!CopyState.oneshot) if (!CopyState.checkExistingFiles())
 			{
 				FlxG.switchState(new CopyState());
