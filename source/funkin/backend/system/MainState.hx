@@ -115,9 +115,6 @@ class MainState extends FlxState {
 		};
 		giteeHttp.onData = (data:String) -> {
 			gitContent = data.trim();
-			#if FOR_MOD_DEBUGER
-			lime.app.Application.current.window.alert(data, "version");
-			#end
 		};
 		initiatedGIT = true;
 		giteeHttp.request();
@@ -134,9 +131,6 @@ class MainState extends FlxState {
 		};
 		githubHttp.onData = (data:String) -> {
 			gitContent = data.trim();
-			#if FOR_MOD_DEBUGER
-			lime.app.Application.current.window.alert(data, "version");
-			#end
 		};
 		initiatedGIT = true;
 		githubHttp.request();
