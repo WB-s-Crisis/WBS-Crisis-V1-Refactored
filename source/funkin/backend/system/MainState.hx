@@ -122,7 +122,7 @@ class MainState extends FlxState {
 		initiatedGIT = true;
 		giteeHttp.request();
 
-		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta.["version"];
+		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta["version"];
 
 		//国外git源
 		githubHttp:Http = new Http("https://raw.githubusercontent.com/VapireMox/WB-S-Crisis_DATA/refs/heads/main/.version");
@@ -141,7 +141,7 @@ class MainState extends FlxState {
 		initiatedGIT = true;
 		githubHttp.request();
 		
-		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta.["version"];
+		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta["version"];
 		return false;
 		#end
 	}
