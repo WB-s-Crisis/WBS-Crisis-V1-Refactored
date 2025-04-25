@@ -125,7 +125,7 @@ class MainState extends FlxState {
 		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta["version"];
 
 		//国外git源
-		githubHttp:Http = new Http("https://raw.githubusercontent.com/VapireMox/WB-S-Crisis_DATA/refs/heads/main/.version");
+		var githubHttp:Http = new Http("https://raw.githubusercontent.com/VapireMox/WB-S-Crisis_DATA/refs/heads/main/.version");
 		githubHttp.onError = (error) -> {
 			initiatedGIT = false;
 			#if FOR_MOD_DEBUGER
@@ -140,7 +140,7 @@ class MainState extends FlxState {
 		};
 		initiatedGIT = true;
 		githubHttp.request();
-		
+
 		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta["version"];
 		return false;
 		#end
