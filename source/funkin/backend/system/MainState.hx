@@ -108,7 +108,7 @@ class MainState extends FlxState {
 		//国内git源
 		var giteeHttp:Http = new Http("https://gitee.com/vapiremox/wb-s-crisis_data/raw/master/.version");
 		giteeHttp.onError = (error) -> {
-			initiatedGIT = false:
+			initiatedGIT = false;
 			#if FOR_MOD_DEBUGER
 			lime.app.Application.current.window.alert(error, "Gitee Error!!");
 			#end
@@ -127,7 +127,7 @@ class MainState extends FlxState {
 		//国外git源
 		githubHttp:Http = new Http("https://raw.githubusercontent.com/VapireMox/WB-S-Crisis_DATA/refs/heads/main/.version");
 		githubHttp.onError = (error) -> {
-			initiatedGIT = false:
+			initiatedGIT = false;
 			#if FOR_MOD_DEBUGER
 			lime.app.Application.current.window.alert(error, "Github Error!!");
 			#end
