@@ -137,7 +137,7 @@ class CopyState extends funkin.backend.MusicBeatState
 				deleteExistFile(file);
 			}
 			
-			if(!FileSystem.exists(".version")) File.saveContent(".version", lime.app.Appcation.current.meta.get("version").trim());
+			if(!FileSystem.exists(".version")) File.saveContent(".version", lime.app.Application.current.meta.get("version").trim());
 		});
 
 		new FlxTimer().start(0.314, (tmr) ->
