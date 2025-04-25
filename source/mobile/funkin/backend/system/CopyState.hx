@@ -136,6 +136,8 @@ class CopyState extends funkin.backend.MusicBeatState
 
 				deleteExistFile(file);
 			}
+			
+			if(!FileSystem.exists(".version")) File.saveContent(".version", lime.app.Appcation.current.meta.get("version").trim());
 		});
 
 		new FlxTimer().start(0.314, (tmr) ->
@@ -315,7 +317,7 @@ class CopyState extends funkin.backend.MusicBeatState
 	public static function checkExistingFiles():Bool
 	{
 		locatedFiles = Paths.assetsTree.list(null);
-		
+
 		vmFiles = CoolUtil.safeGetAllFiles(Sys.getCwd(), false, true).filter((file) -> (!locatedFiles.contains(file) && (file.startsWith("assets/") || file.startsWith("mods/"))));
 
 		// removes unwanted assets

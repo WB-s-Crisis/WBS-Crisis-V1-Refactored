@@ -26,8 +26,6 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 	 */
 	public var callEnded:Bool = true;
 
-
-
 	public function new(path:String, ?parentScript:Script) {
 		script = Script.create(path);
 
@@ -87,16 +85,9 @@ class MultiThreadedScript implements IFlxDestroyable implements IHScriptCustomBe
 		}
 
 		#if ALLOW_MULTITHREADING
-		if (thread != null) {
-			//这是一个很好用的东西，我得检测一下为啥使用destroy会出现问题
-			try {
-				thread.events.runPromised(function() {
-					// close the thing
-				});
-			} catch(e:haxe.Exception) {
-				lime.app.Application.current.window.alert('[${e.message}\n${e.stack}]');
-			}
-		}
+		thread.events.runPromised(function() {
+				// close the thing
+		});
 		#end
 	}
 }

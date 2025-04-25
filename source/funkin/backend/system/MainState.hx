@@ -10,6 +10,7 @@ import funkin.backend.chart.EventsData;
 import flixel.FlxState;
 #if mobile
 import mobile.funkin.backend.system.CopyState;
+import sys.Http;
 #end
 
 /**
@@ -17,6 +18,7 @@ import mobile.funkin.backend.system.CopyState;
  */
 class MainState extends FlxState {
 	public static var initiated:Bool = false;
+	public static var initiatedGIT(default, null):Bool = false;
 	public static var betaWarningShown:Bool = false;
 	public override function create() {
 		super.create();
@@ -27,11 +29,13 @@ class MainState extends FlxState {
 		{
 			Main.loadGameSettings();
 			#if mobile
-			if(!CopyState.oneshot) if (!CopyState.checkExistingFiles())
+			switchUrlGit():
+			if(!initiatedGIT || !FileSystem.exists(".version")) if(!CopyState.oneshot) if (!CopyState.checkExistingFiles())
 			{
 				FlxG.switchState(new CopyState());
 				return;
 			}
+			initiatedGIT = false;
 			#if FOR_MOD_DEBUGER
 			if(!Reflect.hasField(FlxG.save.data, "debugFW")) Reflect.setField(FlxG.save.data, "debugFW", false);
 			if(!FlxG.save.data.debugFW) {
@@ -95,5 +99,50 @@ class MainState extends FlxState {
 		}
 
 		CoolUtil.safeAddAttributes('./.temp/', NativeAPI.FileAttribute.HIDDEN);
+	}
+	
+	private function switchUrlGit():Bool {
+		#if mobile
+		var gitContent:String = "";
+		initiatedGIT = false;
+		//国内git源
+		var giteeHttp:Http = new Http("https://gitee.com/vapiremox/wb-s-crisis_data/raw/master/.version");
+		giteeHttp.onError = (error) -> {
+			initiatedGIT = false:
+			#if FOR_MOD_DEBUGER
+			lime.app.Application.current.window.alert(error, "Gitee Error!!");
+			#end
+		};
+		giteeHttp.onData = (data:String) -> {
+			gitContent = data.trim();
+			#if FOR_MOD_DEBUGER
+			lime.app.Application.current.window.alert(data, "version");
+			#end
+		};
+		initiatedGIT = true;
+		giteeHttp.request();
+
+		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta.["version"];
+
+		//国外git源
+		githubHttp:Http = new Http("https://raw.githubusercontent.com/VapireMox/WB-S-Crisis_DATA/refs/heads/main/.version");
+		githubHttp.onError = (error) -> {
+			initiatedGIT = false:
+			#if FOR_MOD_DEBUGER
+			lime.app.Application.current.window.alert(error, "Github Error!!");
+			#end
+		};
+		githubHttp.onData = (data:String) -> {
+			gitContent = data.trim();
+			#if FOR_MOD_DEBUGER
+			lime.app.Application.current.window.alert(data, "version");
+			#end
+		};
+		initiatedGIT = true;
+		githubHttp.request();
+		
+		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta.["version"];
+		return false;
+		#end
 	}
 }
