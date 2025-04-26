@@ -124,13 +124,13 @@ class CopyState extends funkin.backend.MusicBeatState
 		{
 			for (file in locatedFiles)
 			{
+				loopTimes++;
 				if(file == ".version") {
 					File.saveContent(".version", lime.app.Application.current.meta.get("version").trim());
 					continue;
 				}
 
 				thread.sendProgress({l: loopTimes, t: 'Copying file...["$file"]', c: 0xFFFFFFFF});
-				loopTimes++;
 				copyAsset(file);
 			}
 		});
@@ -170,7 +170,7 @@ class CopyState extends funkin.backend.MusicBeatState
 
 				updateLoadedText("Completed!", FlxColor.YELLOW);
 
-				final sound = FlxG.sound.load(Paths.sound('menu/confirm'));
+				final sound = FlxG.sound.play(Paths.sound('menu/confirm'));
 				sound.onComplete = () ->
 				{
 					directoriesToIgnore = [];
@@ -190,7 +190,6 @@ class CopyState extends funkin.backend.MusicBeatState
 					FlxG.resetGame();
 				};
 				FlxTween.tween(FlxG.camera, {alpha: 0}, sound.length / 2000, {startDelay: sound.length / 2000});
-				sound.play();
 
 				canUpdate = false;
 			}
