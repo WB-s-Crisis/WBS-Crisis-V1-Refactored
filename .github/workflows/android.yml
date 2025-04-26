@@ -16,7 +16,7 @@ jobs:
       - name: Pulling the new commit
         uses: actions/checkout@v4
         with:
-          token: ${{ serects.ACCESS_TOKEN }}
+          token: ${{ serects.IMYOURDAD }}
           submodules: ${{ env.BuildMods }}
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v1
