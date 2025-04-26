@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env: 
-  BuildMods: "true"
+  BuildMods: "false"
 
 jobs:
   build:
@@ -16,7 +16,6 @@ jobs:
       - name: Pulling the new commit
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.ACCESS_TOKEN }}
           submodules: ${{ env.BuildMods }}
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v1
