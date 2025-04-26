@@ -16,6 +16,7 @@ jobs:
       - name: Pulling the new commit
         uses: actions/checkout@v2
         with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           submodules: ${{ env.BuildMods }}
       - name: Setting up Haxe
         uses: krdlab/setup-haxe@v1
