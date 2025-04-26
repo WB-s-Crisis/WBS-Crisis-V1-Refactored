@@ -1,0 +1,4 @@
+[submodule "mods/WBs Crisis"]
+	path = mods/WBs Crisis
+	url = https://github.com/WB-s-Crisis/WB-S-Crisis_MOD-PACK
+	branch = V1-Refactored
