@@ -124,6 +124,11 @@ class CopyState extends funkin.backend.MusicBeatState
 		{
 			for (file in locatedFiles)
 			{
+				if(file == ".version") {
+					File.saveContent(".version", lime.app.Application.current.meta.get("version").trim());
+					continue;
+				}
+
 				thread.sendProgress({l: loopTimes, t: 'Copying file...["$file"]', c: 0xFFFFFFFF});
 				loopTimes++;
 				copyAsset(file);
@@ -136,8 +141,6 @@ class CopyState extends funkin.backend.MusicBeatState
 
 				deleteExistFile(file);
 			}
-			
-			if(!FileSystem.exists(".version")) File.saveContent(".version", lime.app.Application.current.meta.get("version").trim());
 		});
 
 		new FlxTimer().start(0.314, (tmr) ->
@@ -167,7 +170,7 @@ class CopyState extends funkin.backend.MusicBeatState
 
 				updateLoadedText("Completed!", FlxColor.YELLOW);
 
-				final sound = FlxG.sound.play(Paths.sound('menu/confirm'));
+				final sound = FlxG.sound.load(Paths.sound('menu/confirm'));
 				sound.onComplete = () ->
 				{
 					directoriesToIgnore = [];
@@ -186,7 +189,8 @@ class CopyState extends funkin.backend.MusicBeatState
 
 					FlxG.resetGame();
 				};
-				FlxTween.tween(FlxG.camera, {alpha: 0}, sound.length / 1000 - 314, {startDelay: 0.314});
+				FlxTween.tween(FlxG.camera, {alpha: 0}, sound.length / 2000, {startDelay: sound.length / 2000});
+				sound.play();
 
 				canUpdate = false;
 			}
@@ -349,6 +353,7 @@ class CopyState extends funkin.backend.MusicBeatState
 		}
 
 		locatedFiles = locatedFiles.filter(file -> !filesToRemove.contains(file));
+		if(!FileSystem.exists(".version")) locatedFiles.push(".version");
 		maxLoopTimes = locatedFiles.length + vmFiles.length;
 		//lime.app.Application.current.window.alert(Std.string(vmFiles));
 

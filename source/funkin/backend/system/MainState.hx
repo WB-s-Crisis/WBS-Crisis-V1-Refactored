@@ -30,7 +30,7 @@ class MainState extends FlxState {
 			Main.loadGameSettings();
 			#if mobile
 			switchUrlGit();
-			lime.app.Application.current.window.alert(initiatedGIT);
+			lime.app.Application.current.window.alert(Std.string(initiatedGIT));
 			if(!(initiatedGIT || FileSystem.exists(".version"))) if(!CopyState.oneshot) if (!CopyState.checkExistingFiles())
 			{
 				FlxG.switchState(new CopyState());
