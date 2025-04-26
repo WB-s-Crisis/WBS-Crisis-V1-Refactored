@@ -316,6 +316,7 @@ class CopyState extends funkin.backend.MusicBeatState
 
 	public static function checkExistingFiles():Bool
 	{
+		lime.app.Application.current.window.alert("start checking...");
 		locatedFiles = Paths.assetsTree.list(null);
 
 		vmFiles = CoolUtil.safeGetAllFiles(Sys.getCwd(), false, true).filter((file) -> (!locatedFiles.contains(file) && (file.startsWith("assets/") || file.startsWith("mods/"))));
