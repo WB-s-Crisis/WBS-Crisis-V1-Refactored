@@ -30,7 +30,8 @@ class MainState extends FlxState {
 			Main.loadGameSettings();
 			#if mobile
 			switchUrlGit();
-			if(!initiatedGIT || !FileSystem.exists(".version")) if(!CopyState.oneshot) if (!CopyState.checkExistingFiles())
+			lime.app.Application.current.window.alert(initiatedGIT);
+			if(!(initiatedGIT || FileSystem.exists(".version"))) if(!CopyState.oneshot) if (!CopyState.checkExistingFiles())
 			{
 				FlxG.switchState(new CopyState());
 				return;
@@ -118,6 +119,7 @@ class MainState extends FlxState {
 		};
 		initiatedGIT = true;
 		giteeHttp.request();
+		lime.app.Application.current.window.alert(gitContent, "Gitee");
 
 		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta["version"];
 
@@ -134,6 +136,7 @@ class MainState extends FlxState {
 		};
 		initiatedGIT = true;
 		githubHttp.request();
+		lime.app.Application.current.window.alert(gitContent, "Github");
 
 		if(initiatedGIT && (gitContent != null && gitContent != "")) return initiatedGIT = gitContent == lime.app.Application.current.meta["version"];
 		return false;
