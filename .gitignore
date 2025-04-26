@@ -8,6 +8,3 @@ latest/windows/haxe/
 .haxelib/
 pages/
 docs/doc.xml
-mods/*
-!mods/WBs Crisis
-!mods/readme.txt
