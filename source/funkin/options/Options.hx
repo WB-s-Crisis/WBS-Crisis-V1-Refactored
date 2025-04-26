@@ -118,6 +118,7 @@ class Options
 	public static var P2_DOWN:Array<FlxKey> = [DOWN];
 	public static var P2_UP:Array<FlxKey> = [UP];
 	public static var P2_RIGHT:Array<FlxKey> = [RIGHT];
+	public static var P2_DODGE:Array<FlxKey> = [];
 	public static var P2_ACCEPT:Array<FlxKey> = [SPACE];
 	public static var P2_BACK:Array<FlxKey> = [ESCAPE];
 	public static var P2_PAUSE:Array<FlxKey> = [ESCAPE];
