@@ -2,7 +2,7 @@ name: Mac OS Build
 on: workflow_dispatch
 
 env: 
-  BuildMods: "mods/WBs Crisis"
+  BuildMods: "true"
 
 jobs:
   build:
