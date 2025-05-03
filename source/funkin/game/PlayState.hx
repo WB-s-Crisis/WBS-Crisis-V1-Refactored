@@ -3,7 +3,6 @@ package funkin.game;
 import funkin.editors.charter.CharterSelection;
 import flixel.FlxState;
 import funkin.editors.SaveWarning;
-import funkin.extra.PsychBar;
 import funkin.backend.chart.EventsData;
 import funkin.backend.system.RotatingSpriteGroup;
 import funkin.editors.charter.Charter;
@@ -19,10 +18,10 @@ import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
-import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
@@ -306,17 +305,13 @@ class PlayState extends MusicBeatState
 	 */
 	public var comboBreaks:Bool = !Options.ghostTapping;
 	/**
-	 * Health bar. (Contains background)
+	 * Health bar background.
 	 */
-	public var healthBar:PsychBar;
+	public var healthBarBG:FlxSprite;
 	/**
-	 * Health Bar 指定的图片路径。
+	 * Health bar.
 	 */
-	public var healthBarImage:String = "game/healthBar";
-	/**
-	 * 控制Health Bar内的偏移。
-	 */
-	public var healthBarOffset:FlxRect = new FlxRect(4, 4, 4, 4);
+	public var healthBar:FlxBar;
 
 	/**
 	 * Whenever the music has been generated.
@@ -600,8 +595,8 @@ class PlayState extends MusicBeatState
 	private inline function get_maxHealth()
 		return this.maxHealth;
 	private function set_maxHealth(v:Float) {
-		if (healthBar != null && healthBar.bounds.max == this.maxHealth) {
-			healthBar.setBounds(healthBar.bounds.min, v);
+		if (healthBar != null && healthBar.max == this.maxHealth) {
+			healthBar.setRange(healthBar.min, v);
 		}
 		return this.maxHealth = v;
 	}
@@ -805,12 +800,17 @@ class PlayState extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
-		final leftColor:FlxColor = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
-		final rightColor:FlxColor = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
-		healthBar = new PsychBar(0, FlxG.height * 0.9, Paths.image(healthBarImage), 1, 1, () -> health, 0, maxHealth, healthBarOffset.x, healthBarOffset.y, Std.int(healthBarOffset.width), Std.int(healthBarOffset.height)).setColors(leftColor, rightColor);
-		healthBar.leftToRight = false;
-		healthBar.screenCenter(X);
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadAnimatedGraphic(Paths.image('game/healthBar'));
+		healthBarBG.screenCenter(X);
+		healthBarBG.scrollFactor.set();
+		add(healthBarBG);
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			'health', 0, maxHealth);
 		healthBar.scrollFactor.set();
+		var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
+		var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
+		healthBar.createFilledBar(leftColor, rightColor);
 		add(healthBar);
 
 		health = maxHealth / 2;
@@ -822,9 +822,9 @@ class PlayState extends MusicBeatState
 			add(icon);
 		}
 
-		scoreTxt = new FunkinText(healthBar.x + 50, healthBar.y + 30, Std.int(healthBar.width - 100), "Score:0", 16);
-		missesTxt = new FunkinText(healthBar.x + 50, healthBar.y + 30, Std.int(healthBar.width - 100), "Misses:0", 16);
-		accuracyTxt = new FunkinText(healthBar.x + 50, healthBar.y + 30, Std.int(healthBar.width - 100), "Accuracy:-% (N/A)", 16);
+		scoreTxt = new FunkinText(healthBarBG.x + 50, healthBarBG.y + 30, Std.int(healthBarBG.width - 100), "Score:0", 16);
+		missesTxt = new FunkinText(healthBarBG.x + 50, healthBarBG.y + 30, Std.int(healthBarBG.width - 100), "Misses:0", 16);
+		accuracyTxt = new FunkinText(healthBarBG.x + 50, healthBarBG.y + 30, Std.int(healthBarBG.width - 100), "Accuracy:-% (N/A)", 16);
 		accuracyTxt.addFormat(accFormat, 0, 1);
 
 		for(text in [scoreTxt, missesTxt, accuracyTxt]) {
@@ -836,7 +836,7 @@ class PlayState extends MusicBeatState
 		accuracyTxt.alignment = LEFT;
 		updateRatingStuff();
 
-		for(e in [healthBar, iconP1, iconP2, scoreTxt, missesTxt, accuracyTxt])
+		for(e in [healthBar, healthBarBG, iconP1, iconP2, scoreTxt, missesTxt, accuracyTxt])
 			e.cameras = [camHUD];
 		#end
 
@@ -880,7 +880,7 @@ class PlayState extends MusicBeatState
 		updateDiscordPresence();
 
 		// Make icons appear in the correct spot during cutscenes
-		healthBar.percent = 100 * (health / maxHealth);
+		healthBar.update(0);
 		updateIconPositions();
 
 		__updateNote_event = EventManager.get(NoteUpdateEvent);
@@ -1290,8 +1290,10 @@ class PlayState extends MusicBeatState
 	function updateIconPositions() {
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.barCenter - iconOffset;
-		iconP2.x = healthBar.barCenter - (iconP2.width - iconOffset);
+		var center:Float = healthBar.x + healthBar.width * FlxMath.remapToRange(healthBar.percent, 0, 100, 1, 0);
+
+		iconP1.x = center - iconOffset;
+		iconP2.x = center - (iconP2.width - iconOffset);
 
 		health = FlxMath.bound(health, 0, maxHealth);
 

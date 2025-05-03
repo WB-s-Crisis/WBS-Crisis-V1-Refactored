@@ -42,7 +42,7 @@ class Main extends Sprite
 	public static var noTerminalColor:Bool = false;
 
 	public static var scaleMode:FunkinRatioScaleMode;
-	
+
 	public var debugPrintLog:DebugPrint = new DebugPrint(new TextFormat("assets/fonts/COMIC.TTF", 24), true);
 	
 	public var framerateSprite:funkin.backend.system.framerate.Framerate;
@@ -146,7 +146,7 @@ class Main extends Sprite
 		ShaderResizeFix.init();
 		Logs.init();
 		Paths.init();
-		
+
 		//我是废物
 		funkin.extra.UnusedVideoState.init();
 		#if GLOBAL_SCRIPT
@@ -186,7 +186,6 @@ class Main extends Sprite
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);
 
-		FlxG.mouse.useSystemCursor = !Controls.instance.touchC;
 		#if DARK_MODE_WINDOW
 		if(funkin.backend.utils.NativeAPI.hasVersion("Windows 10")) funkin.backend.utils.NativeAPI.redrawWindowHeader();
 		#end

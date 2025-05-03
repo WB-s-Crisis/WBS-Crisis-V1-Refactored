@@ -12,8 +12,7 @@ import flixel.system.FlxAssets;
 import openfl.filters.ShaderFilter;
 
 /**
- * bro，回一句话🙁，空留给你了
- * 
+ * 这里不好看
  */
 class DebugPrint extends Sprite {
 	public var downscroll:Bool;
@@ -35,12 +34,12 @@ class DebugPrint extends Sprite {
 		downscroll = downScroll;
 		this.textFormat = textFormat;
 	}
-    
+
 	public function debugPrint(text:String, ?textOptions:TextOptions) {
-        var print:DebugText = new DebugText(__children.length, textOptions != null && Reflect.hasField(textOptions, "delayTime") ? textOptions.delayTime : null);
+		var print:DebugText = new DebugText(__children.length, textOptions != null && Reflect.hasField(textOptions, "delayTime") ? textOptions.delayTime : null);
 		print.autoSize = TextFieldAutoSize.LEFT;
 
-        if(textOptions != null && Reflect.hasField(textOptions, "style")) {
+		if(textOptions != null && Reflect.hasField(textOptions, "style")) {
 			print.textColor = textOptions.style;
 		}else {
 			print.textColor = NORMAL;
@@ -49,7 +48,7 @@ class DebugPrint extends Sprite {
 		print.text = text;
 		print.defaultTextFormat = this.textFormat;
 		addChild(print);
-    }
+	}
 
 	public override function addChild(child:DisplayObject):DisplayObject {
 		if(child is DebugText) {
@@ -57,18 +56,18 @@ class DebugPrint extends Sprite {
 			//this.filters = [new ShaderFilter(outline)];
 
 			realChild.lastTime = Lib.getTimer();
-            realChild.y = this.downscroll ? FlxG.stage.stageHeight - realChild.height : 0;
-            if(realChild.ID > 0) {
-                updateChildrenPos(realChild);
-            }
+			realChild.y = this.downscroll ? FlxG.stage.stageHeight - realChild.height : 0;
+			if(realChild.ID > 0) {
+				updateChildrenPos(realChild);
+			}
 		}
-		
+
 		return super.addChild(child);
 	}
-	
+
 	public override function removeChild(child:DisplayObject):DisplayObject {
 		//this.filters = [new ShaderFilter(outline)];
-		
+
 		return super.removeChild(child);
 	}
 
@@ -86,9 +85,9 @@ class DebugPrint extends Sprite {
 
 	private function updateChildrenPos(child:DebugText):Void {
 		if(__children.length > 0) {
-		    for(_child in __children) {
-			    _child.y += (this.downscroll ? -1 : 1) * (child.height + hangju);
-		    }
+			for(_child in __children) {
+				_child.y += (this.downscroll ? -1 : 1) * (child.height + hangju);
+			}
 		}
 	}
 
@@ -97,21 +96,21 @@ class DebugPrint extends Sprite {
 		var elapsed:Float = FlxG.elapsed;
 
 		x = FlxG.game.x + 2;
-		
-        if(__children.length > 0) {
-		    for(child in __children) {
-                if(child is DebugText) {
+
+		if(__children.length > 0) {
+			for(child in __children) {
+				if(child is DebugText) {
 					var realChild = cast(child, DebugText);
-					
+
 					if(realChild.lastTime + realChild.delayTime * 1000 < Lib.getTimer()) {
 						realChild.alpha -= elapsed / 0.35;
-						
+
 						if(realChild.lastTime + realChild.delayTime * 1000 + 350 < Lib.getTimer()) {
-                            removeChild(realChild);
-                        }
+							removeChild(realChild);
+						}
 					}
 				}
-		    }
+			}
 		}
 	}
 

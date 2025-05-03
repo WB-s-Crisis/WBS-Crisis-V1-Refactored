@@ -307,9 +307,11 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 	override function update(elapsed:Float)
 	{
 		// TODO: DEBUG MODE!!
+		#if FOR_MOD_DEBUGER
 		if (FlxG.keys.justPressed.F5) {
 			loadScript();
 		}
+		#end
 		call("update", [elapsed]);
 
 		super.update(elapsed);
