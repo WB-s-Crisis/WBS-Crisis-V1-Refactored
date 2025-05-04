@@ -18,6 +18,7 @@ import funkin.backend.scripting.Script;
 import funkin.backend.scripting.ScriptPack;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
@@ -111,6 +112,14 @@ class PlayState extends MusicBeatState
 	 * Game Over End SFX, used when retrying. (assets/sounds/gameOverEnd.ogg)
 	 */
 	public var retrySFX:String = "gameOverEnd";
+	/**
+	 * Health Bar Image Path. (assets/images/game/healthBar.png)
+	 */
+	public var healthBarImage:String = "game/healthBar";
+	/**
+	 * bruh
+	 */
+	public var healthBarOffset:FlxRect = FlxRect.weak(4, 4, 8, 8);
 
 	/**
 	 * Current Stage.
@@ -800,13 +809,13 @@ class PlayState extends MusicBeatState
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadAnimatedGraphic(Paths.image('game/healthBar'));
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadAnimatedGraphic(Paths.image(healthBarImage));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
 
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, maxHealth);
+		healthBar = new FlxBar(healthBarBG.x + healthBarOffset.x, healthBarBG.y + healthBarOffset.y, RIGHT_TO_LEFT, Std.int(healthBarBG.width - healthBarOffset.width), Std.int(healthBarBG.height - healthBarOffset.height), (scripts.publicVariables.exists("healthBarDirection") && Reflect.isObject(scripts.publicVariables["healthBarDirection"]) ? scripts.publicVariables["healthBarDirection"] : this),
+			(scripts.publicVariables.exists("healthBarDirection") && Reflect.isObject(scripts.publicVariables["healthBarDirection"]) && Reflect.hasField(scripts.publicVariables["healthBarDirection"], "point") && (Reflect.getProperty(scripts.publicVariables["healthBarDirection"], "point") is String) && Reflect.hasField(scripts.publicVariables["healthBarDirection"], Reflect.getProperty(scripts.publicVariables["healthBarDirection"], "point")) ? Reflect.getProperty(scripts.publicVariables["healthBarDirection"], "point") : 'health'), 0, maxHealth);
 		healthBar.scrollFactor.set();
 		var leftColor:Int = dad != null && dad.iconColor != null && Options.colorHealthBar ? dad.iconColor : (opponentMode ? 0xFF66FF33 : 0xFFFF0000);
 		var rightColor:Int = boyfriend != null && boyfriend.iconColor != null && Options.colorHealthBar ? boyfriend.iconColor : (opponentMode ? 0xFFFF0000 : 0xFF66FF33); // switch the colors
@@ -1668,15 +1677,15 @@ class PlayState extends MusicBeatState
 		));
 
 		if(event.cancelled) return;
-		
+
 		smoothTransitionData = event.smoothTransition;
 
 		if(event.skipTransCancelled) {
 			MusicBeatState.skipTransIn = false;
-		        MusicBeatState.skipTransOut = false;
+			MusicBeatState.skipTransOut = false;
 		}else {
-		        MusicBeatState.skipTransIn = event.skipTransIn;
-		        MusicBeatState.skipTransOut = event.skipTransOut;
+			MusicBeatState.skipTransIn = event.skipTransIn;
+			MusicBeatState.skipTransOut = event.skipTransOut;
 		}
 	}
 

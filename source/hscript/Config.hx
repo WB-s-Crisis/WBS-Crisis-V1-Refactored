@@ -16,6 +16,8 @@ class Config {
 		#if !DOCUMENTATION
 		"flixel",
 		"openfl",
+		//需要调用
+		"lime.ui",
 
 		"haxe.xml",
 		"haxe.CallStack",
