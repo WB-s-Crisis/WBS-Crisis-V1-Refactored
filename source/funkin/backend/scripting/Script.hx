@@ -20,13 +20,13 @@ class Script extends FlxBasic implements IFlxDestroyable {
 	public static function getDefaultVariables(?script:Script):Map<String, Dynamic> {
 		return [
 			// Haxe related stuff
-			"Json"			  => haxe.Json,
+			"Json" => haxe.Json,
 
 			// OpenFL & Lime related stuff
-			"Assets"			=> openfl.utils.Assets,
-			"Application"	   => lime.app.Application,
-			"Main"				=> funkin.backend.system.Main,
-			"window"			=> lime.app.Application.current.window,
+			"Assets" => openfl.utils.Assets,
+			"Application" => lime.app.Application,
+			"Main" => funkin.backend.system.Main,
+			"window" => lime.app.Application.current.window,
 
 			// Flixel related stuff
 			"FlxG"			  => flixel.FlxG,
@@ -75,11 +75,12 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"MainMenuState"	 => funkin.menus.MainMenuState,
 			"PauseSubState"	 => funkin.menus.PauseSubState,
 			"StoryMenuState"	=> funkin.menus.StoryMenuState,
-			"UnusedVideoState" => funkin.extra.UnusedVideoState,
-			"TitleState"		=> funkin.menus.TitleState,
-			"Options"		   => funkin.options.Options,
-			"Paths"			 => funkin.backend.assets.Paths,
-			"Conductor"		 => funkin.backend.system.Conductor,
+			"UnusedVideoState"	 => funkin.extra.UnusedVideoState,
+			"TitleState"				 => funkin.menus.TitleState,
+			"Options"					 => funkin.options.Options,
+			"Paths"						 => funkin.backend.assets.Paths,
+			"Conductor"				 => funkin.backend.system.Conductor,
+			"SourceShader"	  => funkin.backend.shaders.SourceShader,
 			"FunkinShader"	  => funkin.backend.shaders.FunkinShader,
 			"CustomShader"	  => funkin.backend.shaders.CustomShader,
 			"FunkinText"		=> funkin.backend.FunkinText,
