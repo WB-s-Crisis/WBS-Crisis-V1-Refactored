@@ -134,6 +134,9 @@ class HScript extends Script {
 		interp.execute(parser.mk(EBlock([]), 0, 0));
 		if (expr != null) {
 			interp.execute(expr);
+			#if GLOBAL_SCRIPT
+			funkin.backend.scripting.GlobalScript.call("onScriptLoaded", [this, "hscript"]);
+			#end
 			call("new", []);
 		}
 	}

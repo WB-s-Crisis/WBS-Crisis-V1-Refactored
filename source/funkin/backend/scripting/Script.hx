@@ -22,6 +22,14 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			// Haxe related stuff
 			"Json" => haxe.Json,
 
+			//由于换库了，只能重新导入了
+			"Math" => Math,
+			"Std" => Std,
+			"Type" => Type,
+			"Xml" => Xml,
+			"Reflect" => Reflect,
+			"Sys" => Sys,
+
 			// OpenFL & Lime related stuff
 			"Assets" => openfl.utils.Assets,
 			"Application" => lime.app.Application,
