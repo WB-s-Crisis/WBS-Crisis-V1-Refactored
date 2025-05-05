@@ -25,6 +25,12 @@ class Config {
 		#end
 	];
 
+	// Runs support for using in specific classes. 
+	public static final ALLOWED_USING = [
+		"StringTools",
+		"funkin.backend.utils.CoolUtil",
+	];
+
 	// Incase any of your files fail
 	// These are the module names
 	public static final DISALLOW_CUSTOM_CLASSES = [
@@ -33,5 +39,9 @@ class Config {
 
 	public static final DISALLOW_ABSTRACT_AND_ENUM = [
 		"funkin.backend.scripting.events.PlayAnimEvent", // Error: expected member name or ';' after declaration specifiers, Due to Func
+	];
+
+	public static final DISALLOW_USING = [
+
 	];
 }
