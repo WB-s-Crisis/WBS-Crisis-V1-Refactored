@@ -171,7 +171,7 @@ class HScript extends Script {
 			try {
 				return Reflect.callMethod(null, func, parameters);
 			} catch(e:haxe.Exception) {
-				interp.error(ECustom(e.message));
+				_errorHandler(new Error(ECustom(e.message), 0, 0, fileName, 0));
 			}
 		}
 
