@@ -47,10 +47,6 @@ class HScript extends Script {
 			for (a in args) v += ", " + Std.string(a);
 			this.trace(v);
 		}));
-		
-		interp.variables.set("importAddons", (addonsPath:String) -> {
-			funkin.backend.scripting.addons.AddonsManager.importScriptAddons(addonsPath, this);
-		});
 
 		interp.variables.set("debugPrint", Main.instance.debugPrintLog.debugPrint);
 

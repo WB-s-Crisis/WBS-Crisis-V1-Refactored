@@ -152,7 +152,6 @@ class Main extends Sprite
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
 		#end
-		funkin.backend.scripting.addons.AddonsManager.init();
 
 		#if (sys && TEST_BUILD)
 			trace("Used cne test / cne build. Switching into source assets.");
