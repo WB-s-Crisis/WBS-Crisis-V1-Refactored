@@ -635,11 +635,11 @@ class PlayState extends MusicBeatState
 		camBars = new FlxCamera();
 		FlxG.cameras.add(camBars, false);
 		camBars.bgColor.alpha = 0;
+		FlxG.cameras.add(camHUD = new HudCamera(), false);
+		camHUD.bgColor.alpha = 0;
 		camOther = new FlxCamera();
 		FlxG.cameras.add(camOther, false);
 		camOther.bgColor = 0;
-		FlxG.cameras.add(camHUD = new HudCamera(), false);
-		camHUD.bgColor.alpha = 0;
 
 		downscroll = Options.downscroll;
 

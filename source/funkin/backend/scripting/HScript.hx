@@ -167,8 +167,13 @@ class HScript extends Script {
 		if (!interp.variables.exists(funcName)) return null;
 
 		var func = interp.variables.get(funcName);
-		if (func != null && Reflect.isFunction(func))
-			return Reflect.callMethod(null, func, parameters);
+		if (func != null && Reflect.isFunction(func)) {
+			try {
+				return Reflect.callMethod(null, func, parameters);
+			} catch(e:haxe.Exception) {
+				interp.error(ECustom(e.message));
+			}
+		}
 
 		return null;
 	}
