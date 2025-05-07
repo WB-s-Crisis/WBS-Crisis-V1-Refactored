@@ -86,13 +86,29 @@ final class Annex {
 		final clPath:String = cl.join(".");
 		for(byd in AnnexManager.annexes) {
 			if(byd.customClassesMap.exists(clPath)) {
-				if(n != null) {
-					@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
-					interp.allowStaticAccessClasses.push(n);
-					return true;
-				}
+				if(byd.customClassesMap.exists(clPath.substr(0, clPath.lastIndexOf(".")))) {
+					if(n != null) {
+						@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
+						interp.allowStaticAccessClasses.push(n);
+						return true;
+					}
 
-				interp.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
+					interp.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
+				}else {
+					for(k=>v in byd.customClassesMap) {
+						if(k.substr(0, k.lastIndexOf(".")) == clPath) {
+							interp.allowStaticAccessClasses.push(v.classDecl.name);
+						}else if(k == clPath) {
+							if(n != null) {
+								@:privateAccess Interp._customClassAliases.set(n, k.classDecl.name);
+								interp.allowStaticAccessClasses.push(n);
+								return true;
+							}
+
+							interp.allowStaticAccessClasses.push(v.classDecl.name);
+						}
+					}
+				}
 
 				return true;
 			}
