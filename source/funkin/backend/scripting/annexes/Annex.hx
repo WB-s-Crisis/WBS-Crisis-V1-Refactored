@@ -63,7 +63,7 @@ final class Annex {
 		} catch(e:Error) {
 			_errorHandler(e);
 		} catch(e) {
-			_errorHandler(new Error(ECustom(e.toString()), 0, 0, , 0));
+			_errorHandler(new Error(ECustom(e.toString()), 0, 0, origin, 0));
 		}
 
 		return expr;
