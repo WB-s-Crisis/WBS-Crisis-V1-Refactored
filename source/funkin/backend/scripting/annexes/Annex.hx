@@ -9,11 +9,11 @@ import hscript.customclass.CustomClassDecl;
 
 @:allow(funkin.backend.scripting.annexes.AnnexManager)
 final class Annex {
-	private static var parser:Parser = new Parser();
 	public var allowStaticAccessClasses:Array<String>;
 
 	public var customClassesMap:Map<String, CustomClassDecl>;
 	private var interps:Array<Interp>;
+	private var parser:Parser;
 
 	private var packName:Null<String>;
 	private var cwdPath:String;
@@ -27,6 +27,9 @@ final class Annex {
 		interps = new Array<Interp>();
 		allowStaticAccessClasses = new Array<String>();
 		customClassesMap = new Map<String, CustomClassDecl>();
+
+		parser = new Parser();
+		parser.allowMetadata = parser.allowTypes = parser.allowJSON = true;
 	}
 
 	public function execute() {
@@ -39,8 +42,12 @@ final class Annex {
 
 				var interp = zbInterp();
 				@:privateAccess interp.execute(parser.mk(EBlock([]), 0, 0));
-				interp.execute(parser.parseString(Assets.getText(path), origin));
-				/*if(allowStaticAccessClasses.length > requested) {
+				try {
+					interp.execute(parser.parseString(Assets.getText(path), origin));
+				} catch(e:haxe.Exception) {
+					lime.app.Application.current.window.alert('${e.message}\n${e.stack}', "Annex Error");
+				}
+				if(allowStaticAccessClasses.length > requested) {
 					for(diff in 0...(allowStaticAccessClasses.length - requested)) {
 						final clName = allowStaticAccessClasses[allowStaticAccessClasses.length - (diff + 1)];
 						if(clName != reClname) {
@@ -51,7 +58,7 @@ final class Annex {
 					}
 
 					requested = interp.allowStaticAccessClasses.length;
-				}*/
+				}
 			}
 		}
 	}
