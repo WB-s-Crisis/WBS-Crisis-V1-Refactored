@@ -148,7 +148,6 @@ class Main extends Sprite
 		Paths.init();
 
 		//我是废物
-		funkin.backend.scripting.annexes.AnnexManager.init();
 		funkin.extra.UnusedVideoState.init();
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
@@ -182,6 +181,9 @@ class Main extends Sprite
 		Conductor.init();
 		AudioSwitchFix.init();
 		EventManager.init();
+	
+		funkin.backend.scripting.annexes.AnnexManager.init();
+
 		FlxG.signals.focusGained.add(onFocus);
 		FlxG.signals.preStateSwitch.add(onStateSwitch);
 		FlxG.signals.postStateSwitch.add(onStateSwitchPost);

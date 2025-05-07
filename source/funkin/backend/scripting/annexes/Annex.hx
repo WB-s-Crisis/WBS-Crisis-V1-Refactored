@@ -63,7 +63,7 @@ final class Annex {
 		return interp;
 	}
 
-	@:noCompletion private function _errorHandler(error:Error) {
+	private function _errorHandler(error:Error) {
 		var fileName = error.origin;
 		var fn = '$fileName:${error.line}: ';
 		var err = error.toString();
@@ -76,13 +76,8 @@ final class Annex {
 
 		//乐，放不了debugPrint
 		#if mobile
-		funkin.backend.utils.NativeAPI.showMessageBox(fn, err);
-		try {
-			Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
-			Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
-		} catch(e:haxe.Exception) {
-			lime.app.Application.current.window.alert('${e.message} \n ${e.stack}');
-		}
+		Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
+		Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
 		#end
 	}
 }
