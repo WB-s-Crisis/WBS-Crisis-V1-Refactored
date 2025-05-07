@@ -6,7 +6,7 @@ import sys.FileSystem;
 
 @:allow(funkin.backend.scripting.annexes.Annex)
 final class AnnexManager {
-	private static var annexes(default, null):Array<Annex>;
+	public static var annexes(default, null):Array<Annex>;
 	private static var directorPath(default, null):String;
 
 	private static inline var yourDadPath:String = "source/";
@@ -31,10 +31,10 @@ final class AnnexManager {
 		if(annexes == null || directorPath == null) return;
 		if(!FileSystem.exists(directorPath)) return;
 
-		final localPackage = getAllSubdirectories(directorPath);
+		final localPackage:Array<String> = getAllSubdirectories(directorPath);
 		for(locate in localPackage) {
 			final pack = locate.replace("/", ".");
-			registerAnnex(pack, FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file)));
+			registerAnnex(pack, FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file)), directorPath);
 		}
 	}
 
@@ -47,7 +47,7 @@ final class AnnexManager {
 		return annex;
 	}
 
-	private function getAllSubdirectories(path:String):Array<String> {
+	private static function getAllSubdirectories(path:String):Array<String> {
 		var subdirs = [];
 
 		path = Path.addTrailingSlash(path);

@@ -19,7 +19,7 @@ final class Annex {
 
 	public function new(packName:Null<String>, filesName:Array<String>, ?cwdPath:String) {
 		this.packName = packName;
-		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManger.yourDadPath}/' : cwdPath);
+		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
 		interp = zbInterp();
@@ -55,14 +55,14 @@ final class Annex {
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
-		for(k=>e in Script.getDefaultVariables(this)) {
+		for(k=>e in Script.getDefaultVariables()) {
 			interp.variables.set(k, e);
 		}
 
 		return interp;
 	}
 
-	@:noCompletion private function _errorHandler(e:Error) {
+	@:noCompletion private function _errorHandler(error:Error) {
 		var fileName = error.origin;
 		var fn = '$fileName:${error.line}: ';
 		var err = error.toString();
