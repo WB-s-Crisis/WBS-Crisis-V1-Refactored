@@ -33,7 +33,7 @@ final class AnnexManager {
 
 		//获取根目录的
 		var rootFeat = FileSystem.readDirectory(directorPath).filter((file) -> !FileSystem.isDirectory(directorPath + file));
-		if(rootPack.length > 1) registerAnnex(null, rootFeat);
+		if(rootFeat.length > 1) registerAnnex(null, rootFeat);
 
 		final localPackage:Array<String> = getAllSubdirectories(directorPath);
 		for(locate in localPackage) {
