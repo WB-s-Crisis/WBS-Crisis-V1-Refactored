@@ -10,9 +10,10 @@ import hscript.customclass.CustomClassDecl;
 @:allow(funkin.backend.scripting.annexes.AnnexManager)
 final class Annex {
 	private static var parser:Parser = new Parser();
+	public var allowStaticAccessClasses:Array<String>;
 
 	public var customClassesMap:Map<String, CustomClassDecl>;
-	private var interp:Interp;
+	private var interps:Array<Interp>;
 
 	private var packName:Null<String>;
 	private var cwdPath:String;
@@ -23,7 +24,8 @@ final class Annex {
 		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
-		interp = zbInterp();
+		interps = new Array<Interp>;
+		allowStaticAccessClasses = new Array<String>();
 		customClassesMap = new Map<String, CustomClassDecl>();
 	}
 
@@ -35,11 +37,12 @@ final class Annex {
 				final reClname = Path.withoutExtension(file);
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 
+				var interp = zbInterp();
 				@:privateAccess interp.execute(parser.mk(EBlock([]), 0, 0));
 				interp.execute(parser.parseString(Assets.getText(path), origin));
-				if(interp.allowStaticAccessClasses.length > requested) {
-					for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
-						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
+				/*if(allowStaticAccessClasses.length > requested) {
+					for(diff in 0...(allowStaticAccessClasses.length - requested)) {
+						final clName = allowStaticAccessClasses[allowStaticAccessClasses.length - (diff + 1)];
 						if(clName != reClname) {
 							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
 						}else {
@@ -48,7 +51,7 @@ final class Annex {
 					}
 
 					requested = interp.allowStaticAccessClasses.length;
-				}
+				}*/
 			}
 		}
 	}
@@ -56,11 +59,13 @@ final class Annex {
 	private inline function zbInterp():Interp {
 		var interp:Interp = new Interp();
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
+		interp.allowStaticAccessClasses = this.allowStaticAccessClasses;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
 		for(k=>e in Script.getDefaultVariables()) {
 			interp.variables.set(k, e);
 		}
+		interps.push(interp);
 
 		return interp;
 	}
