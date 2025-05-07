@@ -16,6 +16,8 @@ final class AnnexManager {
 	public static function init() {
 		annexes = new Array<Annex>();
 		ModsFolder.onModSwitch.add(onModSwitch);
+
+		Annex.parser.allowMetadata = Annex.parser.allowTypes = Annex.parser.allowJSON = true;
 	}
 
 	private static function onModSwitch(mod:String) {

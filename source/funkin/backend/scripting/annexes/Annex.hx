@@ -9,11 +9,10 @@ import hscript.customclass.CustomClassDecl;
 
 @:allow(funkin.backend.scripting.annexes.AnnexManager)
 final class Annex {
-	public var allowStaticAccessClasses:Array<String>;
+	private static var parser:Parser = new Parser();
 
 	public var customClassesMap:Map<String, CustomClassDecl>;
-	private var interps:Array<Interp>;
-	private var parser:Parser;
+	private var interp:Interp;
 
 	private var packName:Null<String>;
 	private var cwdPath:String;
@@ -24,12 +23,8 @@ final class Annex {
 		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
-		interps = new Array<Interp>();
-		allowStaticAccessClasses = new Array<String>();
+		interp = zbInterp();
 		customClassesMap = new Map<String, CustomClassDecl>();
-
-		parser = new Parser();
-		parser.allowMetadata = parser.allowTypes = parser.allowJSON = true;
 	}
 
 	public function execute() {
@@ -40,16 +35,13 @@ final class Annex {
 				final reClname = Path.withoutExtension(file);
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 
-				var interp = zbInterp();
-				@:privateAccess interp.execute(parser.mk(EBlock([]), 0, 0));
-				try {
-					interp.execute(parser.parseString(Assets.getText(path), origin));
-				} catch(e:haxe.Exception) {
-					lime.app.Application.current.window.alert('${e.message}\n${e.stack}', "Annex Error");
-				}
-				if(allowStaticAccessClasses.length > requested) {
-					for(diff in 0...(allowStaticAccessClasses.length - requested)) {
-						final clName = allowStaticAccessClasses[allowStaticAccessClasses.length - (diff + 1)];
+				var expr = null;
+				if((expr = parse(Assets.getText(path), origin)) == null) continue;
+
+				interp.execute(expr);
+				if(interp.allowStaticAccessClasses.length > requested) {
+					for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
+						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
 						if(clName != reClname) {
 							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
 						}else {
@@ -63,18 +55,35 @@ final class Annex {
 		}
 	}
 
+	private function parse(code:String, origin:String) {
+		var expr:Expr = null;
+		try {
+			if (code != null && code.trim() != "")
+				expr = parser.parseString(code, origin);
+		} catch(e:Error) {
+			_errorHandler(e);
+		} catch(e) {
+			_errorHandler(new Error(ECustom(e.toString()), 0, 0, , 0));
+		}
+
+		return expr;
+	}
+
 	private inline function zbInterp():Interp {
 		var interp:Interp = new Interp();
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
-		interp.allowStaticAccessClasses = this.allowStaticAccessClasses;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
+		interp.importFailedCallback = _importFailedCallback;
 		for(k=>e in Script.getDefaultVariables()) {
 			interp.variables.set(k, e);
 		}
-		interps.push(interp);
 
 		return interp;
+	}
+
+	private function _importFailedCallback(split:Array<String>, ?cn:Null<String>):Bool {
+		return false;
 	}
 
 	private function _errorHandler(error:Error) {
