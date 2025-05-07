@@ -148,6 +148,7 @@ class Main extends Sprite
 		Paths.init();
 
 		//我是废物
+		funkin.backend.scripting.annexes.AnnexManager.init();
 		funkin.extra.UnusedVideoState.init();
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
