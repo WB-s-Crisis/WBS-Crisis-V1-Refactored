@@ -36,13 +36,18 @@ final class Annex {
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 				interp.execute(parser.parseString(Assets.getText(path), origin));
 				if(interp.allowStaticAccessClasses.length > requested) {
-					for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
-						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
-						if(clName != reClname) {
-							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
-						}else {
-							customClassesMap.set(origin, Interp.getCustomClass(clName));
+					try {
+						for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
+							final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
+							if(clName != reClname) {
+								customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
+							}else {
+								customClassesMap.set(origin, Interp.getCustomClass(clName));
+							}
 						}
+					} catch(e:haxe.Exception) {
+						lime.app.Application.current.window.alert(Std.string(interp.allowStaticAccessClasses));
+						lime.app.Application.current.window.alert(e.message + "\n" + e.stack, "Annex Error¡");
 					}
 
 					requested = interp.allowStaticAccessClasses.length;
@@ -76,7 +81,8 @@ final class Annex {
 
 		//乐，放不了debugPrint
 		#if mobile
-		funkin.backend.utils.NativeAPI.showMessageBox("Hscript Error!!", '$fn \n $err');
+		Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
+		Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
 		#end
 	}
 }
