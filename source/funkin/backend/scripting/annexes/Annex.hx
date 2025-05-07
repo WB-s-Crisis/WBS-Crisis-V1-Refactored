@@ -31,12 +31,13 @@ final class Annex {
 		var requested:Int = 0;
 		for(file in filesName) {
 			final path = '${cwdPath}${packName.replace(".", "/")}/${file}';
+			lime.app.Application.current.window.alert(path);
 			if(AnnexManager.retrievalExtensions.contains(Path.extension(path)) && Assets.exists(path)) {
 				final reClname = Path.withoutExtension(file);
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 				interp.execute(parser.parseString(Assets.getText(path), origin));
 				if(interp.allowStaticAccessClasses.length > requested) {
-					for(diff in 0...Std.int(Math.abs(interp.allowStaticAccessClasses.length - requested))) {
+					for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
 						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
 						if(clName != reClname) {
 							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
