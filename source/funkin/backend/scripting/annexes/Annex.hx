@@ -34,20 +34,17 @@ final class Annex {
 			if(AnnexManager.retrievalExtensions.contains(Path.extension(path)) && Assets.exists(path)) {
 				final reClname = Path.withoutExtension(file);
 				final origin = (packName == null ? reClname : '$packName.$reClname');
+
+				@:privateAccess interp.execute(parser.mk(EBlock([]), 0, 0));
 				interp.execute(parser.parseString(Assets.getText(path), origin));
 				if(interp.allowStaticAccessClasses.length > requested) {
-					try {
-						for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
-							final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
-							if(clName != reClname) {
-								customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
-							}else {
-								customClassesMap.set(origin, Interp.getCustomClass(clName));
-							}
+					for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
+						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
+						if(clName != reClname) {
+							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
+						}else {
+							customClassesMap.set(origin, Interp.getCustomClass(clName));
 						}
-					} catch(e:haxe.Exception) {
-						lime.app.Application.current.window.alert(Std.string(interp.allowStaticAccessClasses));
-						lime.app.Application.current.window.alert(e.message + "\n" + e.stack, "Annex Error¡");
 					}
 
 					requested = interp.allowStaticAccessClasses.length;
