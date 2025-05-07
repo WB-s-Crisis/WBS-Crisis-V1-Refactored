@@ -100,9 +100,8 @@ final class Annex {
 							interp.allowStaticAccessClasses.push(v.classDecl.name);
 						}else if(k == clPath) {
 							if(n != null) {
-								@:privateAccess Interp._customClassAliases.set(n, k.classDecl.name);
+								@:privateAccess Interp._customClassAliases.set(n, v.classDecl.name);
 								interp.allowStaticAccessClasses.push(n);
-								return true;
 							}
 
 							interp.allowStaticAccessClasses.push(v.classDecl.name);
