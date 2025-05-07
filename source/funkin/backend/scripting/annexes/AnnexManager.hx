@@ -31,10 +31,16 @@ final class AnnexManager {
 		if(annexes == null || directorPath == null) return;
 		if(!FileSystem.exists(directorPath)) return;
 
+		//获取根目录的
+		var rootFeat = FileSystem.readDirectory(directorPath).filter((file) -> !FileSystem.isDirectory(directorPath + file));
+		if(rootPack.length > 1) registerAnnex(null, rootFeat);
+
 		final localPackage:Array<String> = getAllSubdirectories(directorPath);
 		for(locate in localPackage) {
 			final pack = locate.replace("/", ".");
-			registerAnnex(pack, FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file)));
+			final meedFeat = FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file));
+			if(meedFeat.length > 1)
+				registerAnnex(pack, meedFeat);
 		}
 	}
 

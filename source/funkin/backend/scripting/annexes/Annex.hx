@@ -31,7 +31,6 @@ final class Annex {
 		var requested:Int = 0;
 		for(file in filesName) {
 			final path = '${cwdPath}${packName.replace(".", "/")}/${file}';
-			lime.app.Application.current.window.alert(path);
 			if(AnnexManager.retrievalExtensions.contains(Path.extension(path)) && Assets.exists(path)) {
 				final reClname = Path.withoutExtension(file);
 				final origin = (packName == null ? reClname : '$packName.$reClname');
@@ -75,10 +74,15 @@ final class Annex {
 			Logs.logText(err, RED)
 		], ERROR);
 
-		//把这里原本的依托卸了
+		//乐，放不了debugPrint
 		#if mobile
-		Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
-		Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
+		funkin.backend.utils.NativeAPI.showMessageBox(fn, err);
+		try {
+			Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
+			Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
+		} catch(e:haxe.Exception) {
+			lime.app.Application.current.window.alert('${e.message} \n ${e.stack}');
+		}
 		#end
 	}
 }
