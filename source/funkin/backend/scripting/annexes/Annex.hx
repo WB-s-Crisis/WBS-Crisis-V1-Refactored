@@ -24,7 +24,7 @@ final class Annex {
 		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
-		interps = new Array<Interp>;
+		interps = new Array<Interp>();
 		allowStaticAccessClasses = new Array<String>();
 		customClassesMap = new Map<String, CustomClassDecl>();
 	}
