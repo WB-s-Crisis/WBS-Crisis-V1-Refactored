@@ -83,6 +83,16 @@ final class Annex {
 	}
 
 	private function _importFailedCallback(split:Array<String>, ?cn:Null<String>):Bool {
+		var clPath:String = split.join(".").trim();
+		for(byd in AnnexManager.annexes) {
+			for(clName=>cls in byd.customClassesMap) {
+				if(clPath == clName && !interp.allowStaticAccessClasses.contains(cls.classDecl.name)) {
+					interp.allowStaticAccessClasses.push(cls.classDecl.name);
+					return true;
+				}
+			}
+		}
+
 		return false;
 	}
 
@@ -97,7 +107,6 @@ final class Annex {
 			Logs.logText(err, RED)
 		], ERROR);
 
-		//乐，放不了debugPrint
 		#if mobile
 		Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
 		Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});

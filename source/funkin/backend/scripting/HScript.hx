@@ -5,6 +5,7 @@ import hscript.Expr.Error;
 import hscript.Parser;
 import openfl.Assets;
 import hscript.*;
+import funkin.backend.scripting.annexes.AnnexManager;
 
 class HScript extends Script {
 	public var interp:Interp;
@@ -70,38 +71,22 @@ class HScript extends Script {
 	}
 
 	private function importFailedCallback(cl:Array<String>, ?str:Null<String>):Bool {
-		var assetsPath = 'assets/source/${cl.join("/")}';
-		for(hxExt in ["hx", "hscript", "hsc", "hxs"]) {
-			var p = '$assetsPath.$hxExt';
-			if (__importedPaths.contains(p))
-				return true; // no need to reimport again
-			if (Assets.exists(p)) {
-				var code = Assets.getText(p);
-				var expr:Expr = null;
-				try {
-					if (code != null && code.trim() != "") {
-						parser.line = 1; // fun fact: this is all you need to reuse a parser without issues. all the other vars get reset on parse.
-						expr = parser.parseString(code, cl.join("/") + "." + hxExt);
-					}
-				} catch(e:Error) {
-					_errorHandler(e);
-				} catch(e) {
-					_errorHandler(new Error(ECustom(e.toString()), 0, 0, fileName, 0));
+		var clPath:String = cl.join(".").trim();
+		for(byd in AnnexManager.annexes) {
+			for(clName=>cls in byd.customClassesMap) {
+				if(clPath == clName && !interp.allowStaticAccessClasses.contains(cls.classDecl.name)) {
+					interp.allowStaticAccessClasses.push(cls.classDecl.name);
+					return true;
 				}
-				if (expr != null) {
-					@:privateAccess
-					interp.exprReturn(expr);
-					__importedPaths.push(p);
-				}
-				return true;
 			}
 		}
+
 		return false;
 	}
 
 	private function _errorHandler(error:Error) {
 		lastThrow = error;
-	
+
 		var fileName = error.origin;
 		if(remappedNames.exists(fileName))
 			fileName = remappedNames.get(fileName);
@@ -141,6 +126,7 @@ class HScript extends Script {
 		// save variables
 
 		interp.allowStaticVariables = interp.allowPublicVariables = false;
+		interp.allowStaticAccessClasses = [];
 		var savedVariables:Map<String, Dynamic> = [];
 		for(k=>e in interp.variables) {
 			if (!Reflect.isFunction(e)) {
