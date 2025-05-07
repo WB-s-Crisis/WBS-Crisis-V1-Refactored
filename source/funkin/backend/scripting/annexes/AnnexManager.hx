@@ -42,6 +42,7 @@ final class AnnexManager {
 		if(annexes == null || directorPath == null) return null;
 
 		var annex:Annex = new Annex(pack, filesName, cwdPath);
+		annex.execute();
 		annexes.push(annex);
 
 		return annex;

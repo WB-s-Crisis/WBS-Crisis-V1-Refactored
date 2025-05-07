@@ -36,7 +36,7 @@ final class Annex {
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 				interp.execute(parser.parseString(Assets.getText(path), origin));
 				if(interp.allowStaticAccessClasses.length > requested) {
-					for(diff in 0...Math.abs(interp.allowStaticAccessClasses.length - requested)) {
+					for(diff in 0...Std.int(Math.abs(interp.allowStaticAccessClasses.length - requested))) {
 						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
 						if(clName != reClname) {
 							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
