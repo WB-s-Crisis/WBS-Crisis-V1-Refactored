@@ -1,5 +1,6 @@
 package funkin.backend.scripting.annexes;
 
+import haxe.io.Path;
 import funkin.backend.scripting.Script;
 import hscript.Interp;
 import hscript.Parser;
