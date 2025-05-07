@@ -33,13 +33,13 @@ final class AnnexManager {
 
 		//获取根目录的
 		var rootFeat = FileSystem.readDirectory(directorPath).filter((file) -> !FileSystem.isDirectory(directorPath + file));
-		if(rootFeat.length > 1) registerAnnex(null, rootFeat);
+		if(rootFeat.length > 0) registerAnnex(null, rootFeat);
 
 		final localPackage:Array<String> = getAllSubdirectories(directorPath);
 		for(locate in localPackage) {
 			final pack = locate.replace("/", ".");
 			final meedFeat = FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file));
-			if(meedFeat.length > 1)
+			if(meedFeat.length > 0)
 				registerAnnex(pack, meedFeat);
 		}
 	}
