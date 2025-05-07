@@ -76,8 +76,7 @@ final class Annex {
 
 		//乐，放不了debugPrint
 		#if mobile
-		Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
-		Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
+		funkin.backend.utils.NativeAPI.showMessageBox("Hscript Error!!", '$fn \n $err');
 		#end
 	}
 }
