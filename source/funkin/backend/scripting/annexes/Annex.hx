@@ -74,7 +74,7 @@ final class Annex {
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
-		interp.importFailedCallback = _importFailedCallback;
+		interp.importFailedCallback = importFailedCallback;
 		for(k=>e in Script.getDefaultVariables()) {
 			interp.variables.set(k, e);
 		}
@@ -82,14 +82,19 @@ final class Annex {
 		return interp;
 	}
 
-	private function _importFailedCallback(split:Array<String>, ?cn:Null<String>):Bool {
-		var clPath:String = split.join(".").trim();
+	private function importFailedCallback(cl:Array<String>, ?n:String) {
+		final clPath:String = cl.join(".");
 		for(byd in AnnexManager.annexes) {
-			for(clName=>cls in byd.customClassesMap) {
-				if(clPath == clName && !interp.allowStaticAccessClasses.contains(cls.classDecl.name)) {
-					interp.allowStaticAccessClasses.push(cls.classDecl.name);
+			if(byd.customClassesMap.exists(clPath)) {
+				if(n != null) {
+					@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
+					interp.allowStaticAccessClasses.push(n);
 					return true;
 				}
+
+				interp.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
+
+				return true;
 			}
 		}
 

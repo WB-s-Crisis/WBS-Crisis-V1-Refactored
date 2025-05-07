@@ -70,14 +70,19 @@ class HScript extends Script {
 		return this;
 	}
 
-	private function importFailedCallback(cl:Array<String>, ?str:Null<String>):Bool {
-		var clPath:String = cl.join(".").trim();
+	private function importFailedCallback(cl:Array<String>, ?n:String) {
+		final clPath:String = cl.join(".");
 		for(byd in AnnexManager.annexes) {
-			for(clName=>cls in byd.customClassesMap) {
-				if(clPath == clName && !interp.allowStaticAccessClasses.contains(cls.classDecl.name)) {
-					interp.allowStaticAccessClasses.push(cls.classDecl.name);
+			if(byd.customClassesMap.exists(clPath)) {
+				if(n != null) {
+					@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
+					interp.allowStaticAccessClasses.push(n);
 					return true;
 				}
+
+				interp.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
+
+				return true;
 			}
 		}
 
