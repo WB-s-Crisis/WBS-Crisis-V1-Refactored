@@ -9,12 +9,10 @@ import hscript.customclass.CustomClassDecl;
 
 @:allow(funkin.backend.scripting.annexes.AnnexManager)
 final class Annex {
-	private static var parser:Parser = new Parser();
-
 	public var customClassesMap:Map<String, CustomClassDecl>;
 	public var allowStaticAccessClasses:Array<String>;
-	private var interps:Array<Interp>;
 
+	private var assManager:Array<AnnexScript>;
 	private var packName:Null<String>;
 	private var cwdPath:String;
 	private var filesName:Array<String>;
@@ -24,7 +22,7 @@ final class Annex {
 		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
-		interps = new Array<Interp>();
+		assManager = new Array<AnnexScript>()
 		allowStaticAccessClasses = new Array<String>();
 		customClassesMap = new Map<String, CustomClassDecl>();
 	}
@@ -37,11 +35,10 @@ final class Annex {
 				final reClname = Path.withoutExtension(file);
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 
-				var expr = null;
-				if((expr = parse(Assets.getText(path), origin)) == null) continue;
+				var ass:AnnexScript = new AnnexScript(this, Assets.getText(path), origin);
+				ass.push();
+				ass.execute();
 
-				var interp = zbInterp();
-				interp.execute(expr);
 				if(allowStaticAccessClasses.length > requested) {
 					for(diff in 0...(allowStaticAccessClasses.length - requested)) {
 						final clName = allowStaticAccessClasses[allowStaticAccessClasses.length - (diff + 1)];
@@ -57,27 +54,35 @@ final class Annex {
 			}
 		}
 	}
+}
 
-	private function parse(code:String, origin:String) {
-		var expr:Expr = null;
-		try {
-			if (code != null && code.trim() != "")
-				expr = parser.parseString(code, origin);
-		} catch(e:Error) {
-			_errorHandler(e);
-		} catch(e) {
-			_errorHandler(new Error(ECustom(e.toString()), 0, 0, origin, 0));
-		}
+private class AnnexScript {
+	public var interp:Interp;
+	public var parser:Parser;
 
-		return expr;
+	private var dad:Annex;
+	private var code:String;
+	private var origin:String;
+	private var expr:Expr;
+
+	public function new(parent:Annex, code:String, origin:String) {
+		dad = parent;
+		this.code = code;
+		this.origin = origin;
+
+		initVars();
 	}
 
-	private inline function zbInterp():Interp {
-		if(interps == null || allowStaticAccessClasses == null) return null;
+	public function execute() {
+		if(this.expr != null) {
+			interp.execute(expr);
+		}
+	}
 
-		var interp:Interp = new Interp();
+	private function initVars() {
+		interp = new Interp();
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
-		interp.allowStaticAccessClasses = allowStaticAccessClasses;
+		interp.allowStaticAccessClasses = dad.allowStaticAccessClasses;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
 		interp.importFailedCallback = importFailedCallback;
@@ -85,30 +90,42 @@ final class Annex {
 			interp.variables.set(k, e);
 		}
 
-		return interp;
+		parser = new Parser();
+		parser.allowTypes = parser.allowMetadata = parser.allowJSON;
 	}
 
-	private function importFailedCallback(cl:Array<String>, ?n:String) {
+	private function parse() {
+		try {
+			if (code != null && code.trim() != "")
+				this.expr = parser.parseString(code, origin);
+		} catch(e:Error) {
+			_errorHandler(e);
+		} catch(e) {
+			_errorHandler(new Error(ECustom(e.toString()), 0, 0, origin, 0));
+		}
+	}
+
+	@:noCompletion private function importFailedCallback(cl:Array<String>, ?n:String) {
 		final clPath:String = cl.join(".");
 		for(byd in AnnexManager.annexes) {
 			if(byd.customClassesMap.exists(clPath)) {
 				if(byd.customClassesMap.exists(clPath.substr(0, clPath.lastIndexOf(".")))) {
 					if(n != null) {
 						@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
-						allowStaticAccessClasses.push(n);
+						dad.allowStaticAccessClasses.push(n);
 						return true;
 					}
 
-					allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
+					dad.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
 				}else {
 					for(k=>v in byd.customClassesMap) {
 						if(k.substr(0, k.lastIndexOf(".")) == clPath) {
-							allowStaticAccessClasses.push(v.classDecl.name);
+							dad.allowStaticAccessClasses.push(v.classDecl.name);
 						}else if(k == clPath) {
 							if(n != null) {
 								@:privateAccess Interp._customClassAliases.set(n, v.classDecl.name);
-								allowStaticAccessClasses.push(n);
-							} else allowStaticAccessClasses.push(v.classDecl.name);
+								dad.allowStaticAccessClasses.push(n);
+							} else dad.allowStaticAccessClasses.push(v.classDecl.name);
 						}
 					}
 				}
@@ -120,7 +137,7 @@ final class Annex {
 		return false;
 	}
 
-	private function _errorHandler(error:Error) {
+	@:noCompletion private function _errorHandler(error:Error) {
 		var fileName = error.origin;
 		var fn = '$fileName:${error.line}: ';
 		var err = error.toString();
