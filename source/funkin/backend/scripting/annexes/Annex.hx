@@ -22,7 +22,7 @@ final class Annex {
 		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
-		assManager = new Array<AnnexScript>()
+		assManager = new Array<AnnexScript>();
 		allowStaticAccessClasses = new Array<String>();
 		customClassesMap = new Map<String, CustomClassDecl>();
 	}
