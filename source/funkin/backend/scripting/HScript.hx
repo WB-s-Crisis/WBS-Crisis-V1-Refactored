@@ -90,9 +90,7 @@ class HScript extends Script {
 							if(n != null) {
 								@:privateAccess Interp._customClassAliases.set(n, v.classDecl.name);
 								interp.allowStaticAccessClasses.push(n);
-							}
-
-							interp.allowStaticAccessClasses.push(v.classDecl.name);
+							}else interp.allowStaticAccessClasses.push(v.classDecl.name);
 						}
 					}
 				}
