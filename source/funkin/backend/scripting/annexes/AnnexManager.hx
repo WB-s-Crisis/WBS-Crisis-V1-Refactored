@@ -52,7 +52,7 @@ final class AnnexManager {
 				final annex:Annex = annexes[i];
 
 				if(annex != null) {
-					ammex.execute();
+					annex.execute();
 				}
 			}
 		}
