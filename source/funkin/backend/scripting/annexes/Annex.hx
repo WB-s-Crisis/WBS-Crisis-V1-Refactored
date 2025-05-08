@@ -12,7 +12,8 @@ final class Annex {
 	private static var parser:Parser = new Parser();
 
 	public var customClassesMap:Map<String, CustomClassDecl>;
-	private var interp:Interp;
+	public var allowStaticAccessClasses:Array<String>;
+	private var interps:Array<Interp>;
 
 	private var packName:Null<String>;
 	private var cwdPath:String;
@@ -23,7 +24,8 @@ final class Annex {
 		this.cwdPath = (cwdPath == null ? 'assets/${AnnexManager.yourDadPath}' : cwdPath);
 		this.filesName = filesName;
 
-		interp = zbInterp();
+		interps = new Array<Interp>();
+		allowStaticAccessClasses = new Array<String>();
 		customClassesMap = new Map<String, CustomClassDecl>();
 	}
 
@@ -38,10 +40,11 @@ final class Annex {
 				var expr = null;
 				if((expr = parse(Assets.getText(path), origin)) == null) continue;
 
+				var interp = zbInterp();
 				interp.execute(expr);
-				if(interp.allowStaticAccessClasses.length > requested) {
-					for(diff in 0...(interp.allowStaticAccessClasses.length - requested)) {
-						final clName = interp.allowStaticAccessClasses[interp.allowStaticAccessClasses.length - (diff + 1)];
+				if(allowStaticAccessClasses.length > requested) {
+					for(diff in 0...(allowStaticAccessClasses.length - requested)) {
+						final clName = allowStaticAccessClasses[allowStaticAccessClasses.length - (diff + 1)];
 						if(clName != reClname) {
 							customClassesMap.set('$origin.$clName', Interp.getCustomClass(clName));
 						}else {
@@ -49,7 +52,7 @@ final class Annex {
 						}
 					}
 
-					requested = interp.allowStaticAccessClasses.length;
+					requested = allowStaticAccessClasses.length;
 				}
 			}
 		}
@@ -70,8 +73,11 @@ final class Annex {
 	}
 
 	private inline function zbInterp():Interp {
+		if(interps == null || allowStaticAccessClasses == null) return null;
+
 		var interp:Interp = new Interp();
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
+		interp.allowStaticAccessClasses = allowStaticAccessClasses;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
 		interp.importFailedCallback = importFailedCallback;
@@ -89,22 +95,20 @@ final class Annex {
 				if(byd.customClassesMap.exists(clPath.substr(0, clPath.lastIndexOf(".")))) {
 					if(n != null) {
 						@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
-						interp.allowStaticAccessClasses.push(n);
+						allowStaticAccessClasses.push(n);
 						return true;
 					}
 
-					interp.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
+					allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
 				}else {
 					for(k=>v in byd.customClassesMap) {
 						if(k.substr(0, k.lastIndexOf(".")) == clPath) {
-							interp.allowStaticAccessClasses.push(v.classDecl.name);
+							allowStaticAccessClasses.push(v.classDecl.name);
 						}else if(k == clPath) {
 							if(n != null) {
 								@:privateAccess Interp._customClassAliases.set(n, v.classDecl.name);
-								interp.allowStaticAccessClasses.push(n);
-							}
-
-							interp.allowStaticAccessClasses.push(v.classDecl.name);
+								allowStaticAccessClasses.push(n);
+							} else allowStaticAccessClasses.push(v.classDecl.name);
 						}
 					}
 				}

@@ -25,6 +25,7 @@ final class AnnexManager {
 		directorPath = (mod == null ? 'assets/${yourDadPath}' : '${ModsFolder.modsPath}${mod}/${yourDadPath}');
 
 		retrieval();
+		execute();
 	}
 
 	private static function retrieval() {
@@ -44,11 +45,23 @@ final class AnnexManager {
 		}
 	}
 
+	public static function execute() {
+		if(annexes.length > 0) {
+			var i:Int = -1;
+			while(i++ < annexes.length) {
+				final annex:Annex = annexes[i];
+
+				if(annex != null) {
+					ammex.execute();
+				}
+			}
+		}
+	}
+
 	private static function registerAnnex(pack:Null<String>, filesName:Array<String>, ?cwdPath:String):Null<Annex> {
 		if(annexes == null || directorPath == null) return null;
 
 		var annex:Annex = new Annex(pack, filesName, cwdPath);
-		annex.execute();
 		annexes.push(annex);
 
 		return annex;
