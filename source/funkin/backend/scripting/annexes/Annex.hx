@@ -36,7 +36,7 @@ final class Annex {
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 
 				var ass:AnnexScript = new AnnexScript(this, Assets.getText(path), origin);
-				ass.push();
+				assManager.push(ass);
 				ass.execute();
 
 				if(allowStaticAccessClasses.length > requested) {
