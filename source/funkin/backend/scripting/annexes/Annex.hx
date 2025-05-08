@@ -74,6 +74,8 @@ private class AnnexScript {
 	}
 
 	public function execute() {
+		parse();
+
 		if(this.expr != null) {
 			interp.execute(expr);
 		}
