@@ -93,7 +93,7 @@ private class AnnexScript {
 		}
 
 		parser = new Parser();
-		parser.allowTypes = parser.allowMetadata = parser.allowJSON;
+		parser.allowTypes = parser.allowMetadata = parser.allowJSON = true;
 	}
 
 	private function parse() {
