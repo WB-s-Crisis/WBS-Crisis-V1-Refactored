@@ -30,7 +30,6 @@ final class AnnexManager {
 		if(annexes == null || directorPath == null) return;
 		if(!FileSystem.exists(directorPath)) return;
 
-		//获取根目录的
 		var rootFeat = FileSystem.readDirectory(directorPath).filter((file) -> !FileSystem.isDirectory(directorPath + file) && retrievalExtensions.contains(Path.extension(file)));
 		if(rootFeat.length > 0) registerAnnex(null, rootFeat);
 
