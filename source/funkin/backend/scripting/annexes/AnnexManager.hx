@@ -8,6 +8,7 @@ import sys.FileSystem;
 final class AnnexManager {
 	public static var annexes(default, null):Array<Annex>;
 	private static var directorPath(default, null):String;
+	private static var matchType:EReg = ~/\b[A-Z][A-z0-9_]*\b/;
 
 	private static inline var yourDadPath:String = "source/";
 
@@ -30,13 +31,13 @@ final class AnnexManager {
 		if(annexes == null || directorPath == null) return;
 		if(!FileSystem.exists(directorPath)) return;
 
-		var rootFeat = FileSystem.readDirectory(directorPath).filter((file) -> !FileSystem.isDirectory(directorPath + file) && retrievalExtensions.contains(Path.extension(file)));
+		var rootFeat = FileSystem.readDirectory(directorPath).filter((file) -> !FileSystem.isDirectory(directorPath + file) && retrievalExtensions.contains(Path.extension(file)) && matchType.match(Path.withoutExtension(file)));
 		if(rootFeat.length > 0) registerAnnex(null, rootFeat);
 
 		final localPackage:Array<String> = getAllSubdirectories(directorPath);
 		for(locate in localPackage) {
 			final pack = locate.replace("/", ".");
-			final meedFeat = FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file) && retrievalExtensions.contains(Path.extension(file)));
+			final meedFeat = FileSystem.readDirectory(directorPath + locate).filter((file) -> !FileSystem.isDirectory(Path.addTrailingSlash(directorPath + locate) + file) && retrievalExtensions.contains(Path.extension(file)) && matchType.match(Path.withoutExtension(file)));
 			if(meedFeat.length > 0)
 				registerAnnex(pack, meedFeat);
 		}

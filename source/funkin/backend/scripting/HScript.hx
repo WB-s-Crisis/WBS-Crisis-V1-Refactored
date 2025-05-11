@@ -70,32 +70,91 @@ class HScript extends Script {
 		return this;
 	}
 
-	private function importFailedCallback(cl:Array<String>, ?n:String) {
-		final clPath:String = cl.join(".");
+		@:noCompletion private function importFailedCallback(cl:Array<String>, ?n:String) {
+		final path:String = cl.join(".");
 		for(byd in AnnexManager.annexes) {
-			if(byd.customClassesMap.exists(clPath)) {
-				if(byd.customClassesMap.exists(clPath.substr(0, clPath.lastIndexOf(".")))) {
-					if(n != null) {
-						@:privateAccess Interp._customClassAliases.set(n, byd.customClassesMap.get(clPath).classDecl.name);
-						interp.allowStaticAccessClasses.push(n);
-						return true;
-					}
+			if(byd.packName != null) {
+				if(path.indexOf(byd.packName) == 0) {
+					final module = path.substr(byd.packName.length + 1).split(".");
+					if(byd.modules.exists(module[0])) {
+						final inModule = byd.modules.get(module[0]);
+						if(module.length > 1) {
+							if(inModule.customClasses.exists(module[1])) {
+								if(n != null) {
+									@:privateAccess Interp._customClassAliases.set(n, module[1]);
+									interp.allowStaticAccessClasses.push(n);
+								} else interp.allowStaticAccessClasses.push(module[1]);
 
-					interp.allowStaticAccessClasses.push(byd.customClassesMap.get(clPath).classDecl.name);
-				}else {
-					for(k=>v in byd.customClassesMap) {
-						if(k.substr(0, k.lastIndexOf(".")) == clPath) {
-							interp.allowStaticAccessClasses.push(v.classDecl.name);
-						}else if(k == clPath) {
-							if(n != null) {
-								@:privateAccess Interp._customClassAliases.set(n, v.classDecl.name);
-								interp.allowStaticAccessClasses.push(n);
-							}else interp.allowStaticAccessClasses.push(v.classDecl.name);
+								return true;
+							} else if(inModule.customEnums.exists(module[1])) {
+								interp.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
+								return true;
+							}
+						} else if(module.length == 1) {
+							for(key in inModule.customClasses.keys()) {
+								if(module[0] == key && n != null) {
+									@:privateAccess Interp._customClassAliases.set(n, key);
+									interp.allowStaticAccessClasses.push(n);
+
+									continue;
+								}
+
+								interp.allowStaticAccessClasses.push(key);
+							}
+							for(key=>value in inModule.customEnums) {
+								if(module[0] == key && n != null) {
+									interp.customEnums.set(n, value);
+
+									continue;
+								}
+
+								interp.customEnums.set(key, value);
+							}
+
+							return true;
 						}
 					}
 				}
+			} else {
+				final module = cl;
+				if(byd.modules.exists(module[0])) {
+					final inModule = byd.modules.get(module[0]);
+					if(module.length > 1) {
+						if(inModule.customClasses.exists(module[1])) {
+							if(n != null) {
+								@:privateAccess Interp._customClassAliases.set(n, module[1]);
+								interp.allowStaticAccessClasses.push(n);
+							} else interp.allowStaticAccessClasses.push(module[1]);
 
-				return true;
+							return true;
+						} else if(inModule.customEnums.exists(module[1])) {
+							interp.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
+							return true;
+						}
+					} else if(module.length == 1) {
+						for(key in inModule.customClasses.keys()) {
+							if(module[0] == key && n != null) {
+								@:privateAccess Interp._customClassAliases.set(n, key);
+								interp.allowStaticAccessClasses.push(n);
+
+								continue;
+							}
+
+							interp.allowStaticAccessClasses.push(key);
+						}
+						for(key=>value in inModule.customEnums) {
+							if(module[0] == key && n != null) {
+								interp.customEnums.set(n, value);
+
+								continue;
+							}
+
+							interp.customEnums.set(key, value);
+						}
+
+						return true;
+					}
+				}
 			}
 		}
 
