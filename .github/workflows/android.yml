@@ -28,7 +28,7 @@ jobs:
       #    ndk-version: r27c
       #    add-to-path: false
       - name: Restore existing build cache for faster compilation
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # not caching the bin folder to prevent asset duplication and stuff like that
           key: cache-build-android
@@ -77,7 +77,7 @@ jobs:
             }
 
       - name: Uploading new cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           # caching again since for some reason it doesnt work with the first post cache shit
           key: cache-build-android
