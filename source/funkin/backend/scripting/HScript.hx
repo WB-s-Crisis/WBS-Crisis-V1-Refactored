@@ -87,7 +87,7 @@ class HScript extends Script {
 
 								return true;
 							} else if(inModule.customEnums.exists(module[1])) {
-								interp.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
+								interp.customEnums.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
 								return true;
 							}
 						} else if(module.length == 1) {
@@ -128,7 +128,7 @@ class HScript extends Script {
 
 							return true;
 						} else if(inModule.customEnums.exists(module[1])) {
-							interp.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
+							interp.customEnums.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
 							return true;
 						}
 					} else if(module.length == 1) {

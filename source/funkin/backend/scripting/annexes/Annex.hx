@@ -10,7 +10,7 @@ import hscript.customclass.CustomClassDecl;
 
 @:allow(funkin.backend.scripting.annexes.AnnexManager)
 final class Annex {
-	public var allowStaticAccessTypes:Array<String>;
+	public var allowStaticAccessTypes:Map<String, Dynamic>;
 	public var modules:Map<String, AnnexModule>;
 	public var packName:Null<String>;
 
@@ -24,7 +24,6 @@ final class Annex {
 
 		modules = new Map<String, AnnexModule>();
 		allowStaticAccessTypes = new Array<String>();
-		customClassesMap = new Map<String, CustomClassDecl>();
 	}
 
 	public function execute() {
@@ -56,6 +55,9 @@ final class AnnexModule {
 	public var customClasses:Map<String, CustomClassDecl>;
 	public var customEnums:Map<String, HScriptEnum>;
 
+	private var _customClasses:Array<String>;
+	private var _customEnums:Array<String>;
+
 	private var dad:Annex;
 	private var code:String;
 	private var origin:String;
@@ -75,26 +77,38 @@ final class AnnexModule {
 		if(this.expr != null) {
 			interp.execute(expr);
 
-			for(cls in interp.allowStaticAccessClasses) {
-				if(Interp.customClassExist(cls)) {
+			for(cls in interp.allowStaticAccessClasses)
+				if(!_customClasses.contains(cls) && Interp.customClassExist(cls))
 					customClasses.set(cls, Interp.getCustomClass(cls));
-					if(!dad.allowStaticAccessTypes.contains(cls))
-						dad.allowStaticAccessTypes.push(cls);
-				}
-			}
-			for(name in customEnums.keys()) {
-				if(!dad.allowStaticAccessTypes.contains(name))
-					dad.allowStaticAccessTypes.push(name);
+			for(name=>en in interp.customEnums)
+				if(!_customEnums.contains(name))
+					customEnums.set(name, en);
+
+			if(interp.allowStaticAccessClasses.contains(moduleName)) {
+				dad.allowStaticAccessTypes.set(moduleName, Interp.getCustomClass(moduleName));
+			} else if(interp.customEnums.exists(moduleName)) {
+				dad.allowStaticAccessTypes.set(moduleName, interp.customEnums.get(moduleName));
 			}
 		}
 	}
 
 	private function initVars() {
 		customClasses = new Map<String, CustomClassDecl>();
-		customEnums = new Mao<String, HScriptEnum>();
+		customEnums = new Map<String, HScriptEnum>();
+
+		_customClasses = new Array<String>();
+		_customEnums = new Array<String>();
 
 		interp = new Interp();
-		interp.customEnums = this.customEnums;
+		for(key=>value in dad.allowStaticAccessTypes)
+			if(Interp.customClassExist(key) && (value is CustomClassDecl)) {
+				_customClasses.push(key);
+				interp.allowStaticAccessClasses.push(key);
+			} else if(value is HScriptEnum) {
+				_customEnums.push(key);
+				interp.customEnums.set(key, cast value);
+			}
+
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
 		interp.staticVariables = Script.staticVariables;
 		interp.errorHandler = _errorHandler;
@@ -135,7 +149,7 @@ final class AnnexModule {
 
 								return true;
 							} else if(inModule.customEnums.exists(module[1])) {
-								interp.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
+								interp.customEnums.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
 								return true;
 							}
 						} else if(module.length == 1) {
@@ -176,7 +190,7 @@ final class AnnexModule {
 
 							return true;
 						} else if(inModule.customEnums.exists(module[1])) {
-							interp.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
+							interp.customEnums.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
 							return true;
 						}
 					} else if(module.length == 1) {
