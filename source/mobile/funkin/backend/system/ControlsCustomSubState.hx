@@ -67,6 +67,7 @@ class ControlsCustomSubState extends FlxSubState {
 		virtualPad = new VirtualPad(Options.buttonsType, true);
 		virtualPad.forEach((button:TouchButton) -> {
 			button.ID = virtualPad.members.indexOf(button);
+		});
 
 		virtualPad.cameras = [camButton];
 		add(virtualPad);
