@@ -73,6 +73,11 @@ jobs:
                 console.log("Cache cleared.")
               }
             }
+
+      - name: Some Testing
+        run: |
+          ls
+
       - name: Uploading new cache
         uses: actions/cache@v3
         with:
