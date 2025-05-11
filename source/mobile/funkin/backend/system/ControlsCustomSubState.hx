@@ -11,12 +11,15 @@ import funkin.backend.system.Main;
 import funkin.options.OptionsScreen;
 import mobile.extra.VirtualPad;
 import mobile.extra.Hitbox;
+import flixel.input.touch.FlxTouch;
 import flixel.FlxSubState;
+
+using funkin.backend.utils.CoolUtil;
 
 /**
  * @author: GeXie(Vapire Mox)
  */
-class ButtonSubState extends FlxSubState {
+class ControlsCustomSubState extends FlxSubState {
 	public var camButton:FlxCamera;
 
 	public var bg:FlxBackdrop;
@@ -29,7 +32,7 @@ class ButtonSubState extends FlxSubState {
 	public var arrows:FlxTypedGroup<FlxSprite>;
 	public var labelText:FlxText;
 
-	public var debugText:FlxText;
+	//public var debugText:FlxText;
 
 	public static var displayOptions:Array<String> = ["Right", "Left", "Hitbox", "Custom", "Keyboard"];
 	public static var realOptions:Array<String> = ["RIGHT_FULL", "LEFT_FULL", "HITBOX", "CUSTOM", "KEYBOARD"];
@@ -38,16 +41,15 @@ class ButtonSubState extends FlxSubState {
 	var canDo:Bool = false;
 
 	var arrowsZhen:Array<Bool> = [false, false];
-	var trackedCustomPressed:Array<Bool> = [false, false, false, false, false];
-	var trackedCustomContent:Array<Dynamic> = [];
 
+	private var trackButtons:Array<TrackButton>;
 	var prevCustomPos:Array<Array<Float>>;
 
 	public function new() {
 		FlxG.state.persistentUpdate = false;
 		FlxG.state.persistentDraw = true;
 		prevCustomPos = getButtonCustomPos();
-		
+
 		super();
 	}
 
@@ -66,33 +68,6 @@ class ButtonSubState extends FlxSubState {
 		virtualPad.forEach((button:TouchButton) -> {
 			button.ID = virtualPad.members.indexOf(button);
 
-			button.onDown.callback = function() {
-				if(!trackedCustomPressed.contains(true) && realOptions[curOptions] == "CUSTOM") {
-					trackedCustomPressed[button.ID] = true;
-				trackedCustomContent.push({
-						x: button.x,
-						y: button.y
-					});
-
-					CoolUtil.playMenuSFX();
-					debugText.visible = true;
-					debugText.text = "(Cur Button: " + button.ID + ")\n(X: " + button.x + " | Y: " + button.y + ")";
-					debugText.y = FlxG.height - debugText.height;
-				}
-			};
-			button.onUp.callback = function() {
-				if(trackedCustomPressed.contains(true) && realOptions[curOptions] == "CUSTOM") {
-					trackedCustomPressed[button.ID] = false;
-					trackedCustomContent.pop();
-
-					var ok = prevCustomPos[button.ID];
-					ok[0] = button.x;
-					ok[1] = button.y;
-
-					debugText.visible = false;
-				}
-			};
-		});
 		virtualPad.cameras = [camButton];
 		add(virtualPad);
 
@@ -100,12 +75,12 @@ class ButtonSubState extends FlxSubState {
 		hitbox.cameras = [camButton];
 		add(hitbox);
 
-		debugText = new FlxText(0, FlxG.height, FlxG.width, "bean");
+		/*debugText = new FlxText(0, FlxG.height, FlxG.width, "bean");
 		debugText.antialiasing = Options.antialiasing;
 		debugText.setFormat(Paths.font("vcr.ttf"), 24, 0xFFFFFFFF, null, OUTLINE, 0xFF4D0000);
 		debugText.borderSize *= 2;
 		debugText.cameras = [camButton];
-		add(debugText);
+		add(debugText);*/
 
 		labelText = new FlxText(150, 30, 0, "nothing", 16);
 		labelText.setFormat(Paths.font("vcr.ttf"), 64, 0xFFFFFFFF, null, OUTLINE, 0xFF4D0000);
@@ -147,7 +122,7 @@ class ButtonSubState extends FlxSubState {
 		}});
 		FlxTween.tween(Main.instance.framerateSprite, {alpha: 0.1}, 0.35);
 		selection(0, true);
-		
+
 		super.create();
 	}
 
@@ -156,17 +131,37 @@ class ButtonSubState extends FlxSubState {
 			bg.x += elapsed * 25;
 			bg.y += elapsed * 25;
 			if(realOptions[curOptions] == "CUSTOM") {
-				for(touch in FlxG.touches.list) {
-					var touchPos = touch.getScreenPosition(camButton);
+					var checkGlobalPressed:Bool = false;
+					for(touch in FlxG.touches.list) {
+						final touchPos = touch.getWorldPosition();
+						for(i in 0...buttons.length) {
+							final button = buttons.members[buttons.length - 1 - i];
 
-					for(button in virtualPad.iterator()) {
-						if(trackedCustomPressed[button.ID]) {
-							button.setPosition(touchPos.x - (touch.justPressedPosition.x - trackedCustomContent[trackedCustomContent.length - 1].x), touchPos.y - (touch.justPressedPosition.y - trackedCustomContent[trackedCustomContent.length - 1].y));
-							debugText.text = "(Cur Button: " + button.ID + ")\n(X: " + button.x + " | Y: " + button.y + ")";
-							break;
+							if(touch.justPressed && button.overlapsPoint(touchPos)) {
+								trackButtons.push({button: button, touch: touch, offset: FlxPoint.get(touchPos.x - button.x, touchPos.y - button.y)});
+								CoolUtil.playMenuSFX();
+								break;
+							}
+						}
+
+						if(touch.pressed) checkGlobalPressed = true;
+					}
+
+					for(list in trackButtons) {
+						final touchPos = list.touch.getWorldPosition();
+
+						list.button.setPosition(touchPos.x - list.offset.x, touchPos.y - list.offset.y);
+						if(list.touch.justReleased) {
+							prevCustomPos[list.button.ID][0] = list.button.x;
+							prevCustomPos[list.button.ID][1] = list.button.y;
+							trackButtons.remove(list);
 						}
 					}
-				}
+
+					//clear your dad >:]
+					if(!checkGlobalPressed) {
+						trackButtons.clear();
+					}
 			}
 
 			if(arrows != null && arrows.active) {
@@ -328,4 +323,12 @@ class ButtonSubState extends FlxSubState {
 		return bitmapData;
 	}
 }
+
+typedef TrackButton = {
+	var button:TouchButton;
+	var touch:FlxTouch;
+	var offset:FlxPoint;
+	var ?data:String;
+}
+
 #end
