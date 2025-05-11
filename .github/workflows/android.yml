@@ -74,10 +74,6 @@ jobs:
               }
             }
 
-      - name: Some Testing
-        run: |
-          ls
-
       - name: Uploading new cache
         uses: actions/cache@v3
         with:
@@ -89,3 +85,7 @@ jobs:
             export/release/android/obj/
           restore-keys: |
             cache-build-android
+
+      - name: Some Testing
+        run: |
+          ls -a
