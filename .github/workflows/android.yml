@@ -34,8 +34,7 @@ jobs:
           key: cache-build-android
           path: |
             .haxelib/
-            ~/.gradle/caches
-            ~/.gradle/wrapper
+            ~/.gradle/
             export/release/android/haxe/
             export/release/android/obj/
           restore-keys: |
