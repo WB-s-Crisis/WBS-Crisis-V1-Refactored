@@ -23,7 +23,7 @@ final class Annex {
 		this.filesName = filesName;
 
 		modules = new Map<String, AnnexModule>();
-		allowStaticAccessTypes = new Array<String>();
+		allowStaticAccessTypes = new Map<String, Dynamic>();
 	}
 
 	public function execute() {
