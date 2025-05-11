@@ -35,7 +35,7 @@ final class Annex {
 				final origin = (packName == null ? reClname : '$packName.$reClname');
 
 				var ass:AnnexModule = new AnnexModule(this, Assets.getText(path), origin);
-				modules.set(origin, ass);
+				modules.set(reClname, ass);
 				ass.execute();
 			}
 		}
