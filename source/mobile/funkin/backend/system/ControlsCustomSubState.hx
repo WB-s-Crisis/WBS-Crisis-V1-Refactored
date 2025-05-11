@@ -135,8 +135,8 @@ class ControlsCustomSubState extends FlxSubState {
 					var checkGlobalPressed:Bool = false;
 					for(touch in FlxG.touches.list) {
 						final touchPos = touch.getWorldPosition();
-						for(i in 0...buttons.length) {
-							final button = buttons.members[buttons.length - 1 - i];
+						for(i in 0...virtualPad.length) {
+							final button = virtualPad.members[virtualPad.length - 1 - i];
 
 							if(touch.justPressed && button.overlapsPoint(touchPos)) {
 								trackButtons.push({button: button, touch: touch, offset: FlxPoint.get(touchPos.x - button.x, touchPos.y - button.y)});

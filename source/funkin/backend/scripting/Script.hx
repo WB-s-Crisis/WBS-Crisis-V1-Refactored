@@ -68,9 +68,6 @@ class Script extends FlxBasic implements IFlxDestroyable {
 			"ModSubState"	   => funkin.backend.scripting.ModSubState,
 			"PlayState"		 => funkin.game.PlayState,
 			"GameOverSubstate"  => funkin.game.GameOverSubstate,
-			#if mobile
-			"ButtonSubState" => mobile.funkin.backend.system.ButtonSubState,
-			#end
 			"HealthIcon"		=> funkin.game.HealthIcon,
 			"HudCamera"		 => funkin.game.HudCamera,
 			"Note"			  => funkin.game.Note,
