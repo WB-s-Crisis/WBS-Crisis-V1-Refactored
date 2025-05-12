@@ -42,7 +42,7 @@ class ControlsCustomSubState extends FlxSubState {
 
 	var arrowsZhen:Array<Bool> = [false, false];
 
-	private var trackButtons:Array<TrackButton>;
+	private var trackButtons:Array<TrackButton> = [];
 	var prevCustomPos:Array<Array<Float>>;
 
 	public function new() {
