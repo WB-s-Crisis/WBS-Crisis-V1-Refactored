@@ -134,11 +134,11 @@ class ControlsCustomSubState extends FlxSubState {
 			if(realOptions[curOptions] == "CUSTOM") {
 					var checkGlobalPressed:Bool = false;
 					for(touch in FlxG.touches.list) {
-						final touchPos = touch.getWorldPosition();
+						final touchPos = touch.getWorldPosition(camButton);
 						for(i in 0...virtualPad.length) {
 							final button = virtualPad.members[virtualPad.length - 1 - i];
 
-							if(touch.justPressed && button.overlapsPoint(touchPos)) {
+							if(touch.justPressed && button.overlapsPoint(touchPos, true, camButton)) {
 								trackButtons.push({button: button, touch: touch, offset: FlxPoint.get(touchPos.x - button.x, touchPos.y - button.y)});
 								CoolUtil.playMenuSFX();
 								break;
@@ -149,7 +149,7 @@ class ControlsCustomSubState extends FlxSubState {
 					}
 
 					for(list in trackButtons) {
-						final touchPos = list.touch.getWorldPosition();
+						final touchPos = list.touch.getWorldPosition(camButton);
 
 						list.button.setPosition(touchPos.x - list.offset.x, touchPos.y - list.offset.y);
 						if(list.touch.justReleased) {
