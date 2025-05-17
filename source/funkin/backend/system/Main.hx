@@ -149,7 +149,6 @@ class Main extends Sprite
 
 		//我是废物
 		funkin.extra.UnusedVideoState.init();
-		funkin.backend.scripting.annexes.AnnexManager.init();
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.init();
 		#end
