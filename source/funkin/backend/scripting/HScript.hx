@@ -39,7 +39,6 @@ class HScript extends Script {
 		__importedPaths = [path];
 
 		interp.errorHandler = _errorHandler;
-		interp.importFailedCallback = importFailedCallback;
 		interp.staticVariables = Script.staticVariables;
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
 
@@ -68,97 +67,6 @@ class HScript extends Script {
 		}
 
 		return this;
-	}
-
-		@:noCompletion private function importFailedCallback(cl:Array<String>, ?n:String) {
-		final path:String = cl.join(".");
-		for(byd in AnnexManager.annexes) {
-			if(byd.packName != null) {
-				if(path.indexOf(byd.packName) == 0) {
-					final module = path.substr(byd.packName.length + 1).split(".");
-					if(byd.modules.exists(module[0])) {
-						final inModule = byd.modules.get(module[0]);
-						if(module.length > 1) {
-							if(inModule.customClasses.exists(module[1])) {
-								if(n != null) {
-									@:privateAccess Interp._customClassAliases.set(n, module[1]);
-									interp.allowStaticAccessClasses.push(n);
-								} else interp.allowStaticAccessClasses.push(module[1]);
-
-								return true;
-							} else if(inModule.customEnums.exists(module[1])) {
-								interp.customEnums.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
-								return true;
-							}
-						} else if(module.length == 1) {
-							for(key in inModule.customClasses.keys()) {
-								if(module[0] == key && n != null) {
-									@:privateAccess Interp._customClassAliases.set(n, key);
-									interp.allowStaticAccessClasses.push(n);
-
-									continue;
-								}
-
-								interp.allowStaticAccessClasses.push(key);
-							}
-							for(key=>value in inModule.customEnums) {
-								if(module[0] == key && n != null) {
-									interp.customEnums.set(n, value);
-
-									continue;
-								}
-
-								interp.customEnums.set(key, value);
-							}
-
-							return true;
-						}
-					}
-				}
-			} else {
-				final module = cl;
-				if(byd.modules.exists(module[0])) {
-					final inModule = byd.modules.get(module[0]);
-					if(module.length > 1) {
-						if(inModule.customClasses.exists(module[1])) {
-							if(n != null) {
-								@:privateAccess Interp._customClassAliases.set(n, module[1]);
-								interp.allowStaticAccessClasses.push(n);
-							} else interp.allowStaticAccessClasses.push(module[1]);
-
-							return true;
-						} else if(inModule.customEnums.exists(module[1])) {
-							interp.customEnums.set((n != null ? n : module[1]), inModule.customEnums.get(module[1]));
-							return true;
-						}
-					} else if(module.length == 1) {
-						for(key in inModule.customClasses.keys()) {
-							if(module[0] == key && n != null) {
-								@:privateAccess Interp._customClassAliases.set(n, key);
-								interp.allowStaticAccessClasses.push(n);
-
-								continue;
-							}
-
-							interp.allowStaticAccessClasses.push(key);
-						}
-						for(key=>value in inModule.customEnums) {
-							if(module[0] == key && n != null) {
-								interp.customEnums.set(n, value);
-
-								continue;
-							}
-
-							interp.customEnums.set(key, value);
-						}
-
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
 	}
 
 	private function _errorHandler(error:Error) {

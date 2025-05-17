@@ -138,7 +138,7 @@ class ControlsCustomSubState extends FlxSubState {
 						for(i in 0...virtualPad.length) {
 							final button = virtualPad.members[virtualPad.length - 1 - i];
 
-							if(touch.justPressed && button.overlapsPoint(touchPos, true, camButton)) {
+							if(touch.justPressed && touch.overlaps(button, camButton)) {
 								trackButtons.push({button: button, touch: touch, offset: FlxPoint.get(touchPos.x - button.x, touchPos.y - button.y)});
 								CoolUtil.playMenuSFX();
 								break;
@@ -293,7 +293,7 @@ class ControlsCustomSubState extends FlxSubState {
 
 	private function saveCallback() {
 		Options.buttonsType = realOptions[curOptions];
-		setButtonCustomPos(prevCustomPos, Options.buttonsCustomPos);
+		if(Options.buttonsType == "CUSTOM") setButtonCustomPos(prevCustomPos, Options.buttonsCustomPos);
 		Options.save();
 	}
 
