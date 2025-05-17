@@ -5,7 +5,6 @@ import hscript.Expr.Error;
 import hscript.Parser;
 import openfl.Assets;
 import hscript.*;
-import funkin.backend.scripting.annexes.AnnexManager;
 
 class HScript extends Script {
 	public var interp:Interp;
