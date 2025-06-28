@@ -2,7 +2,6 @@ package funkin.backend.assets;
 
 import funkin.backend.assets.IModsAssetLibrary;
 import lime.utils.AssetLibrary;
-import lime.utils.AssetType;
 
 class AssetsLibraryList extends AssetLibrary {
 	public var libraries:Array<AssetLibrary> = [];
@@ -64,7 +63,8 @@ class AssetsLibraryList extends AssetLibrary {
 			if (l is IModsAssetLibrary) {
 				var lib = cast(l, IModsAssetLibrary);
 				for(e in lib.getFiles(folder))
-					content.push(e);
+					if(!content.contains(e))
+						content.push(e);
 			}
 			#end
 		}
@@ -88,7 +88,8 @@ class AssetsLibraryList extends AssetLibrary {
 			if (l is IModsAssetLibrary) {
 				var lib = cast(l, IModsAssetLibrary);
 				for(e in lib.getFolders(folder))
-					content.push(e);
+					if(!content.contains(e))
+						content.push(e);
 			}
 			#end
 		}
@@ -162,23 +163,6 @@ class AssetsLibraryList extends AssetLibrary {
 	public function addLibrary(lib:AssetLibrary) {
 		libraries.insert(0, lib);
 		return lib;
-	}
-
-	override public function list(type:String):Array<String>
-	{
-		var items = [];
-
-		for (library in libraries)
-		{
-			var libraryItems = library.list(type);
-
-			if (libraryItems != null)
-			{
-				items = items.concat(libraryItems);
-			}
-		}
-
-		return items;
 	}
 }
 
