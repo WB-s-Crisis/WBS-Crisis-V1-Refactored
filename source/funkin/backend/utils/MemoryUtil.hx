@@ -71,6 +71,10 @@ class MemoryUtil {
 		return funkin.backend.utils.native.Mac.getTotalRam();
 		#elseif linux
 		return funkin.backend.utils.native.Linux.getTotalRam();
+		#elseif android
+		return funkin.backend.utils.native.Android.getTotalRam();
+		#elseif ios
+		return funkin.backend.utils.native.IOS.getTotalRam();
 		#else
 		return 0;
 		#end
@@ -134,7 +138,7 @@ class MemoryUtil {
 		var process = new HiddenProcess("powershell", ["-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object -ExpandProperty SMBIOSMemoryType" ]);
 		if (process.exitCode() == 0) memoryOutput = Std.int(Std.parseFloat(process.stdout.readAll().toString().trim().split("\n")[1]));
 		if (memoryOutput != -1) return memoryMap[memoryOutput] == null ? 'Unknown ($memoryOutput)' : memoryMap[memoryOutput];
-		#elseif mac
+		#elseif (mac || ios)
 		var process = new HiddenProcess("system_profiler", ["SPMemoryDataType"]);
 		var reg = ~/Type: (.+)/;
 		reg.match(process.stdout.readAll().toString());
