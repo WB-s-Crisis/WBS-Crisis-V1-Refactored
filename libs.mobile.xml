@@ -13,7 +13,7 @@
 	<git name="flxanimate" url="https://github.com/CodenameCrew/cne-flxanimate" />
 	<lib name="hxvlc" version="1.9.3" skipDeps="true" />
 	<lib name="hxIni" version="" />
-	<git name="hxcpp" url="haxelib git hxcpp https://github.com/th2l-devs/hxcpp" />
+	<git name="hxcpp" url="https://github.com/th2l-devs/hxcpp" />
 
 	<!-- Documentation and other features -->
 	<git name="away3d" url="https://github.com/CodenameCrew/away3d" />
