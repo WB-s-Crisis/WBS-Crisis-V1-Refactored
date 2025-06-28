@@ -11,6 +11,9 @@ class HScript extends Script {
 	public var parser:Parser;
 	public var expr:Expr;
 	public var code:String = null;
+	
+	public var lastThrow:Error = null;
+	
 	//public var folderlessPath:String;
 	var __importedPaths:Array<String>;
 
@@ -35,7 +38,6 @@ class HScript extends Script {
 		__importedPaths = [path];
 
 		interp.errorHandler = _errorHandler;
-		interp.importFailedCallback = importFailedCallback;
 		interp.staticVariables = Script.staticVariables;
 		interp.allowStaticVariables = interp.allowPublicVariables = true;
 
@@ -44,6 +46,8 @@ class HScript extends Script {
 			for (a in args) v += ", " + Std.string(a);
 			this.trace(v);
 		}));
+
+		interp.variables.set("debugPrint", Main.instance.debugPrintLog.debugPrint);
 
 		#if GLOBAL_SCRIPT
 		funkin.backend.scripting.GlobalScript.call("onScriptCreated", [this, "hscript"]);
@@ -64,37 +68,9 @@ class HScript extends Script {
 		return this;
 	}
 
-	private function importFailedCallback(cl:Array<String>):Bool {
-		var assetsPath = 'assets/source/${cl.join("/")}';
-		for(hxExt in ["hx", "hscript", "hsc", "hxs"]) {
-			var p = '$assetsPath.$hxExt';
-			if (__importedPaths.contains(p))
-				return true; // no need to reimport again
-			if (Assets.exists(p)) {
-				var code = Assets.getText(p);
-				var expr:Expr = null;
-				try {
-					if (code != null && code.trim() != "") {
-						parser.line = 1; // fun fact: this is all you need to reuse a parser without issues. all the other vars get reset on parse.
-						expr = parser.parseString(code, cl.join("/") + "." + hxExt);
-					}
-				} catch(e:Error) {
-					_errorHandler(e);
-				} catch(e) {
-					_errorHandler(new Error(ECustom(e.toString()), 0, 0, fileName, 0));
-				}
-				if (expr != null) {
-					@:privateAccess
-					interp.exprReturn(expr);
-					__importedPaths.push(p);
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private function _errorHandler(error:Error) {
+		lastThrow = error;
+
 		var fileName = error.origin;
 		if(remappedNames.exists(fileName))
 			fileName = remappedNames.get(fileName);
@@ -106,6 +82,12 @@ class HScript extends Script {
 			Logs.logText(fn, GREEN),
 			Logs.logText(err, RED)
 		], ERROR);
+
+		//把这里原本的依托卸了
+		#if mobile
+		Main.instance.debugPrintLog.debugPrint(fn, {delayTime: 3.5, style: 0x00ff00});
+		Main.instance.debugPrintLog.debugPrint(err, {delayTime: 3.5, style: 0xff0000});
+		#end
 	}
 
 	public override function setParent(parent:Dynamic) {
@@ -117,18 +99,18 @@ class HScript extends Script {
 		interp.execute(parser.mk(EBlock([]), 0, 0));
 		if (expr != null) {
 			interp.execute(expr);
+			#if GLOBAL_SCRIPT
+			funkin.backend.scripting.GlobalScript.call("onScriptLoaded", [this, "hscript"]);
+			#end
 			call("new", []);
 		}
-
-		#if GLOBAL_SCRIPT
-		funkin.backend.scripting.GlobalScript.call("onScriptSetup", [this, "hscript"]);
-		#end
 	}
 
 	public override function reload() {
 		// save variables
 
 		interp.allowStaticVariables = interp.allowPublicVariables = false;
+		interp.allowStaticAccessClasses = [];
 		var savedVariables:Map<String, Dynamic> = [];
 		for(k=>e in interp.variables) {
 			if (!Reflect.isFunction(e)) {
@@ -155,8 +137,13 @@ class HScript extends Script {
 		if (!interp.variables.exists(funcName)) return null;
 
 		var func = interp.variables.get(funcName);
-		if (func != null && Reflect.isFunction(func))
-			return Reflect.callMethod(null, func, parameters);
+		if (func != null && Reflect.isFunction(func)) {
+			try {
+				return Reflect.callMethod(null, func, parameters);
+			} catch(e:haxe.Exception) {
+				_errorHandler(new Error(ECustom(e.message), 0, 0, fileName, 0));
+			}
+		}
 
 		return null;
 	}
