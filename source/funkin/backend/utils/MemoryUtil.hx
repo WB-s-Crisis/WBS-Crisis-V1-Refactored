@@ -69,12 +69,8 @@ class MemoryUtil {
 		return funkin.backend.utils.native.Windows.getTotalRam();
 		#elseif mac
 		return funkin.backend.utils.native.Mac.getTotalRam();
-		#elseif ios
-		return funkin.backend.utils.native.IOS.getTotalRam();
 		#elseif linux
 		return funkin.backend.utils.native.Linux.getTotalRam();
-		#elseif android
-		return funkin.backend.utils.native.Android.getTotalRam();
 		#else
 		return 0;
 		#end
@@ -96,7 +92,7 @@ class MemoryUtil {
 	public static function getMemType():String {
 		#if windows
 		var memoryMap:Map<Int, String> = [
-			0 => "Unknown",
+			0 => null,
 			1 => "Other",
 			2 => "DRAM",
 			3 => "Synchronous DRAM",
@@ -121,20 +117,28 @@ class MemoryUtil {
 			22 => "DDR2 FB-DIMM",
 			24 => "DDR3",
 			25 => "FBD2",
-			26 => "DDR4"
+			26 => "DDR4",
+			27 => "LPDDR",
+			28 => "LPDDR2",
+			29 => "LPDDR3",
+			30 => "LPDDR4",
+			31 => "Logical Non-volatile device",
+			32 => "HBM",
+			33 => "HBM2",
+			34 => "DDR5",
+			35 => "LPDDR5",
+			36 => "HBM3",
 		];
 		var memoryOutput:Int = -1;
 
-		var process = new HiddenProcess("wmic", ["memorychip", "get", "SMBIOSMemoryType"]);
+		var process = new HiddenProcess("powershell", ["-Command", "Get-CimInstance Win32_PhysicalMemory | Select-Object -ExpandProperty SMBIOSMemoryType" ]);
 		if (process.exitCode() == 0) memoryOutput = Std.int(Std.parseFloat(process.stdout.readAll().toString().trim().split("\n")[1]));
-		if (memoryOutput != -1) return memoryMap[memoryOutput];
-		#elseif (mac || ios)
+		if (memoryOutput != -1) return memoryMap[memoryOutput] == null ? 'Unknown ($memoryOutput)' : memoryMap[memoryOutput];
+		#elseif mac
 		var process = new HiddenProcess("system_profiler", ["SPMemoryDataType"]);
 		var reg = ~/Type: (.+)/;
 		reg.match(process.stdout.readAll().toString());
 		if (process.exitCode() == 0) return reg.matched(1);
-		#elseif android
-		// MTODO: Do get mem type for android smh?
 		#elseif linux
 		/*var process = new HiddenProcess("sudo", ["dmidecode", "--type", "17"]);
 		if (process.exitCode() != 0) return "Unknown";

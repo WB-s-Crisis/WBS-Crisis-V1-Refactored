@@ -27,9 +27,6 @@ import haxe.CallStack;
 using StringTools;
 
 @:allow(funkin.game.PlayState)
-#if cpp
-@:cppFileCode('#include <thread>')
-#end
 class CoolUtil
 {
 	public static function getLastExceptionStack():String {
@@ -81,53 +78,6 @@ class CoolUtil
 			}
 		}
 		#end
-	}
-
-	/**
-	 * Safely retrieve all files in the specified directory and subdirectories.
-	 * @param originPath Specify directory
-	 * @param reservePath Add the path of the specified directory to the output file or not.
-	 * @param stayEmptyDirectory Keep an empty directory or not.
-	 * @param showErrorBox When an error is captured, should alert be displayed.
-	 */
-	@:noUsing public static function safeGetAllFiles(originPath:String, reservePath:Bool = false, stayEmptyDirectory = true, showErrorBox:Bool = false):Array<String> {
-		#if sys
-		var files:Array<String> = [];
-		originPath = Path.addTrailingSlash(originPath);
-
-		var errorMessages:Array<String> = [];
-		function traverse(currentPath:String) {
-			try {
-				if (FileSystem.exists(currentPath) && FileSystem.isDirectory(currentPath)) {
-					final sb = FileSystem.readDirectory(currentPath);
-					if(sb.length > 0) for (item in sb) {
-						var fullPath = Path.addTrailingSlash(currentPath) + item;
-						if (FileSystem.isDirectory(fullPath)) {
-							traverse(fullPath);
-						} else {
-							files.push(reservePath ? fullPath : fullPath.substr(originPath.length));
-						}
-					}
-					else if(stayEmptyDirectory) {
-						files.push(reservePath ? currentPath : currentPath.substr(originPath.length));
-					}
-				}
-			} catch(e:haxe.Exception) {
-				errorMessages.push('Reading This Directory "$currentPath" Failed! \n[${e.message}\n${Std.string(e.stack)}]');
-			}
-		}
-
-		traverse(originPath);
-		if(errorMessages.length > 0) {
-			for(error in errorMessages) {
-				if(showErrorBox) funkin.backend.utils.NativeAPI.showMessageBox("Get All Files Error!", error);
-				Logs.trace(error, ERROR);
-			}
-			return [];
-		}
-		return files;
-		#end
-		return [];
 	}
 
 	/**
@@ -659,11 +609,11 @@ class CoolUtil
 	 * @param spr Sprite to load the graphic for
 	 * @param path Path to the graphic
 	 */
-	public static function loadAnimatedGraphic(spr:FlxSprite, path:String) {
+	public static function loadAnimatedGraphic(spr:FlxSprite, path:String, fps:Float = 24.0) {
 		spr.frames = Paths.getFrames(path, true);
 
 		if (spr.frames != null && spr.frames.frames != null) {
-			spr.animation.add("idle", [for(i in 0...spr.frames.frames.length) i], 24, true);
+			spr.animation.add("idle", [for(i in 0...spr.frames.frames.length) i], fps, true);
 			spr.animation.play("idle");
 		}
 
@@ -970,16 +920,6 @@ class CoolUtil
 		var fromProperty = CoolUtil.parseProperty(fromTarget, fields);
 
 		return toProperty.setValue(fromProperty.getValue());
-	}
-	
-	#if cpp
-	@:functionCode('
-		return std::thread::hardware_concurrency();
-	')
-	#end
-	public static function getCPUThreadsCount():Int
-	{
-		return 1;
 	}
 }
 
